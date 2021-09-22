@@ -1,0 +1,32 @@
+{
+    "xworld": "0x5b1869D9A4C187F2EAa108f3062412ecf0526b24",
+    "shop": "0xCfEB869F69431e42cdB54A4F4f105C19C080A601",
+    "nft": "0x254dffcd3277C0b1660F6d42EFbB754edaBAbC2B",
+    "exchange": "",
+    "operator": "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1",
+    "ethHost": "http://e.dev.xworld.pro:28080",
+    "ht_test": {
+        "shop": "0xc4A8FEDcD6b61eF1529C899fEE41B1898889f5BB",
+        "nft": "0x796d833c1c6fF56216d070A61Dd42897Af1ee1A7",
+        "ibox": "0x87b59F4E3129E89bA53333028945625a0eE46C66",
+        "iboxExchange": "0xa41142CCDe53aE4450f258E37211318c7D73e5FC",
+        "usdt": "0x04F535663110A392A6504839BEeD34E019FdB4E0",
+        "operator": "0xcbdf73b671160836a7Fa9A0319Cc2B87b01F9752",
+        "ethHost": "wss://ws-testnet.hecochain.com",
+        "usdt_receiver": "0xcbdf73b671160836a7Fa9A0319Cc2B87b01F9752",
+        "nft_receiver": "0xcbdf73b671160836a7Fa9A0319Cc2B87b01F9752",
+        "chainId": 256
+    },
+    "ht_main": {
+        "shop": "0x6E202337A3F057224B0c6ffaa0Fee5468Aab39D0",
+        "nft": "0x077cb9dF4e5f1D9F734a20a23D4C74D0868327c5",
+        "ibox": "0xD3d20D0Bd31751f084Cb4E4fF98E568c8C2132Fb",
+        "iboxExchange": "0xDc0F146A5c32F48562f9229d5f03Af4933607211",
+        "usdt": "0xa71edc38d189767582c38a3145b5873052c3e47a",
+        "operator": "0x95cBF0801D511bF5d835BF8929337c1b6448e837",
+        "ethHost": "wss://ws-mainnet-node.huobichain.com",
+        "usdt_receiver": "0x8f04C40F742EA8Dd875537B54E5A1A6f556bAEDF",
+        "nft_receiver": "0xac3b316bb782cb4587A7FD2522e0161E702BA579",
+        "chainId": 128
+    }
+}
