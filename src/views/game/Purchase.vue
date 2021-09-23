@@ -70,7 +70,7 @@ export default {
     return {
       show: false,
       amount: 100,
-      mp: 0.25,
+      mp: 40000,
       mpShopContract: new MPShopContract(),
       usdtContract: new UsdtContract(),
       config: getConfig(),
@@ -106,7 +106,7 @@ export default {
   methods: {
     getUsdt(val) {
       this.amount = val;
-      this.mp = this.amount * 0.0025;
+      this.mp = this.amount / 0.0025;
     },
     // buyMP(40,1);//1mp=0.025usdt
     async buyMP(mp, amount) {
@@ -127,7 +127,7 @@ export default {
         //授权
         await that.approveUsdt(5000);
       }
-      const r = createPurchaseMPRequest(mp, amount);
+      // const r = createPurchaseMPRequest(mp, amount);
       purchaseInterfaceApi({
         cmd: "CREATE_PURCHASE_MP_ORDER",
         requestUserId: that.accountInfo.userId,

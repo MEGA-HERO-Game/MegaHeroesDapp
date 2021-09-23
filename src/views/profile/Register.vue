@@ -13,9 +13,9 @@
     </div> -->
     <div class="mh_form">
       <van-field class="mh_input" v-model="email" placeholder="请输入邮箱" />
-      <van-field class="mh_input" v-model="password" placeholder="请输入密码" />
+      <van-field class="mh_input" v-model="password" type="password" placeholder="请输入密码" />
       <div class="mh_form_tip">密码长度须在6位至8位之间</div>
-      <van-field class="mh_input" v-model="password1" placeholder="请再次输入密码" />
+      <van-field class="mh_input" v-model="password1" type="password" placeholder="请再次输入密码" />
       <!-- <div class="mh-flex mh-align-between">
         <van-field class="mh_input" v-model="code" placeholder="输入邀请码" />
         <div class="mh_form_code mh-center">邀请码</div>
