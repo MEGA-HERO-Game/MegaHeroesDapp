@@ -3,11 +3,11 @@
     <div class="box mh-center">
       <img class="logo" src="@/assets/home/logo.png" alt="">
       <div v-if="status == 0">抱歉，您未持有激活游戏账号的NFT资产</div>
-      <div v-if="status == 1">您已激活游戏账号<br>快去下载游戏，创建角色吧！</div>
-      <div v-if="status == 2">
+      <div v-if="status == 1 || status == 2">您已激活游戏账号<br>快去下载游戏，创建角色吧！</div>
+      <!-- <div v-if="status == 2">
         您已持有激活游戏账号的NFT资产<br>
         赶快去下载游戏吧
-      </div>
+      </div> -->
       <div v-if="status == 3">
         游戏角色未创建<br>请使用创建的账号和密码<br>登录游戏客户端，并创建角色
       </div>

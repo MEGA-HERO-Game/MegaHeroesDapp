@@ -7,19 +7,19 @@
       </div>
       <div class="section mh-flex mh-center">
         <div class="usdt mh-center">
-          <img src="@/assets/game/diamonds.png" alt="">
+          <img class="usdtImg" src="@/assets/common/usdt.png" alt="">
           USDT
         </div>
         <img class="right" src="@/assets/game/right.png" alt="">
         <div class="usdt mh-center">
-          <img src="@/assets/game/diamonds.png" alt="">
+          <img src="@/assets/common/diamonds.png" alt="">
           钻石
         </div>
       </div>
 
       <div class="num-con mh-flex">
         <div class="transferout mh-flex mh-vertical-center mh-flex-1" @click="show = !show">
-          转出数量
+          转出数量{{amount}}
           <div class="triangle"></div>
           <div class="select-list" v-if="show">
             <div class="select-item" :class="{active: amount == 50}" @click="getUsdt(50)">50USDT</div>
@@ -34,7 +34,7 @@
       </div>
 
       <div class="text">
-        汇率  1钻石=0.0025USDT
+        汇率  1钻石={{diamondsPrice}}USDT
         <span>（限时五折优惠）</span>
       </div>
       <div class="text">
@@ -42,7 +42,8 @@
         <span>0</span>
         （限时优惠）
       </div>
-      <div class="foot_btn text-center" @click="buyMP(amount, mp)">立即购买</div>
+      <div v-if="status == 4" class="foot_btn text-center" @click="buyMP(mp, amount)">立即购买</div>
+      <div v-else class="foot_btn text-center">游戏角色未创建</div>
       <div class="foot-tip">
         请注意：须使用注册的账号和密码登录游戏客户端，并且创建角色，才能购买钻石
       </div>
@@ -59,7 +60,8 @@ import { MPShopContract } from "@/xworldjs/mp_shop";
 import { UsdtContract } from "@/xworldjs/usdt";
 import { mapGetters } from "vuex";
 import { getConfig, getUsdtPrice } from "@/config";
-import { purchaseInterfaceApi } from "@/api/user";
+import { purchaseInterfaceApi, drawInterfaceApi } from "@/api/user";
+import { diamondsPrice } from "@/utils/status";
 export default {
   name: "Purchase",
   components: { LoadingModal, TipModal },
@@ -70,13 +72,15 @@ export default {
     return {
       show: false,
       amount: 100,
-      mp: 40000,
+      mp: 4000,
       mpShopContract: new MPShopContract(),
       usdtContract: new UsdtContract(),
       config: getConfig(),
       mpTimer: null,
       mpTimeOut: 0,
-      myUSDT: 0
+      myUSDT: 0,
+      diamondsPrice,
+      status: null //0  2  3  4
     };
   },
   watch: {
@@ -87,6 +91,7 @@ export default {
           this.accountInfo.userId &&
           this.accountInfo.token
         ) {
+          this.getDraw();
           this.mpShopContract
             .init(this.web3.currentProvider, this.config.shop)
             .then(() => {
@@ -106,26 +111,27 @@ export default {
   methods: {
     getUsdt(val) {
       this.amount = val;
-      this.mp = this.amount / 0.0025;
+      this.mp = this.amount / this.diamondsPrice;
     },
     // buyMP(40,1);//1mp=0.025usdt
     async buyMP(mp, amount) {
       let that = this;
       let userInfo = this.accountInfo;
-
+      this.$refs["LoadingModal"].initData();
       let myUSDT = await this.balanceOfUsdt(userInfo.userId);
-      console.log("===myUSDT=====", myUSDT);
+      console.log("===myUSDT=====", myUSDT,  amount);
 
       if (myUSDT < amount) {
+        this.$refs["LoadingModal"].close();
         console.error("额度不足");
         that.$refs["TipModal"].initData("额度不足");
         return;
       }
-      const usdt = await this.usdtContract.allowance(that.account, config.shop);
+      const usdt = await this.usdtContract.allowance(that.account, that.config.shop);
       console.log("===usdt=====", usdt);
       if (usdt < amount) {
         //授权
-        await that.approveUsdt(5000);
+        await that.approveUsdt(myUSDT);
       }
       // const r = createPurchaseMPRequest(mp, amount);
       purchaseInterfaceApi({
@@ -143,6 +149,7 @@ export default {
             that.MPShopRequestId(data.requestId, amount);
           }, 2000);
         } else {
+          that.$refs["LoadingModal"].close();
           console.error(data.code, ":", data.errorMessage);
           that.$refs["TipModal"].initData(data.errorMessage);
         }
@@ -174,11 +181,12 @@ export default {
       if (result === 1) {
         that.mpTimer = clearInterval(that.mpTimer);
         try {
-          const data = await that.buyMP(rId, amount, err => {
+          const data = await that.goBuyMP(rId, amount, err => {
             console.log("error:::123:", err);
           });
           console.log("data---------", data);
           console.log("充值成功");
+          that.$refs["LoadingModal"].close();
           that.$refs["TipModal"].initData("钻石已存入游戏！请进入游戏查看");
         } catch (err) {
           let message = "";
@@ -189,15 +197,18 @@ export default {
             message = "交易失败：交易id：" + err.hash;
           }
           console.error("buyMP error::::", message);
+          that.$refs["LoadingModal"].close();
           that.$refs["TipModal"].initData(message);
         }
       } else if (result === 2) {
         console.log("该订单已支付");
+        that.$refs["LoadingModal"].close();
         that.$refs["TipModal"].initData("该订单已支付");
       } else {
         if (that.mpTimeOut > 60) {
           that.mpTimer = clearInterval(that.mpTimer);
           console.error("支付超时，请重新发起支付!");
+          that.$refs["LoadingModal"].close();
           that.$refs["TipModal"].initData("支付超时，请重新发起支付!");
         }
       }
@@ -212,6 +223,37 @@ export default {
       // console.log('requestId:::::', id.toNumber())
       const result = await this.mpShopContract.getOrderStatus(requestId);
       return result;
+    },
+    /***
+     *
+     * @param token
+     * @param address
+     * @param index
+     * @param amount
+     * @param price
+     * @returns {Promise<void>}
+     * 
+     */
+    async goBuyMP(requestId, price, callback) {
+      let that = this;
+      console.log('buyMP:::::', getUsdtPrice(price))
+      await this.mpShopContract.buyMP(requestId, getUsdtPrice(price), that.account, callback);
+    },
+    getDraw() {
+      drawInterfaceApi({
+        cmd: "GET_GAME_DRAW_STATUS",
+        requestUserId: this.accountInfo.userId,
+        token: this.accountInfo.token,
+        requestTime: new Date().valueOf()
+      })
+        .then(response => {
+          if (response.code == 1) {
+            this.status = response.status;
+          } else {
+            Toast(response.errorMessage);
+          }
+        })
+        .catch(error => {});
     }
   }
 };
@@ -243,6 +285,9 @@ export default {
         img {
           width: 48px;
           margin-right: 16px;
+        }
+        .usdtImg{
+          width: 69px;
         }
       }
       .right {

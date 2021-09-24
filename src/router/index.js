@@ -77,7 +77,45 @@ const routes = [
       }
     ]
   },
-  { path: '*', redirect: '/', hidden: true, meta: {}}
+  {
+    path: '/card',
+    component: Layout,
+    name: 'Card',
+    redirect: '/card/purchase',
+    children: [
+      {
+        path: 'purchase',
+        component: () => import('@/views/card/Purchase.vue'),
+        name: 'CardPurchase',
+        meta: { title: '', icon: '', affix: true }
+      }
+    ]
+  },
+  {
+    path: '/pledge',
+    component: Layout,
+    name: 'Pledge',
+    redirect: '/pledge/index',
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/pledge/Index.vue'),
+        name: 'PledgeIndex',
+        meta: { title: '', icon: '', affix: true }
+      }, {
+        path: 'form',
+        component: () => import('@/views/pledge/Form.vue'),
+        name: 'PledgeForm',
+        meta: { title: '', icon: '', affix: true }
+      }, {
+        path: 'relieve',
+        component: () => import('@/views/pledge/Relieve.vue'),
+        name: 'RelieveForm',
+        meta: { title: '', icon: '', affix: true }
+      },
+    ]
+  },
+  { path: '*', redirect: '/', hidden: true, meta: {} }
 ]
 
 const router = new VueRouter({

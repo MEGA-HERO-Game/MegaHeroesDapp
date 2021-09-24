@@ -10,11 +10,19 @@
     </div>
     <div class="purchase-box">
       <div class="purchase-text text-center">
-        钻石价格：0.025USDT
+        钻石价格：{{diamondsPrice}}USDT
         <span>（限时五折优惠）</span>
       </div>
-      <div class="purchase-btn mh-center">立即购买</div>
+      <div class="purchase-btn mh-center" @click="goBuy">立即购买</div>
     </div>
+
+    <!-- <div class="box optionBox">
+      <div class="option mh-flex mh-align-between" v-for="(item, index) in diamondsOption" :key="index">
+        <div class="label">{{item.name}}</div>
+        <div class="val">（价值{{item.val}}钻石）</div>
+      </div>
+      <div class="purchase-btn mh-center purchase-btns">立即购买</div>
+    </div> -->
     <!-- <div class="box">
       <img class="logo" src="@/assets/home/logo.png" alt="">
       <div class="content">
@@ -24,14 +32,14 @@
 
     <!-- <div class="home-title mh-center">开始游戏</div> -->
     <div class="banner">
-      <img src="@/assets/home/banner1.png" alt="">
+      <img src="@/assets/home/banner5.png" alt="">
     </div>
     <div class="box">
       <div class="name text-center">质押</div>
       <div class="content">
         Mega Hero将部分的平台收益奖励给质押的用户，质押资产为钻石箱，收益按照区块进行分配，个人的收益按照个人资产价值跟质押总资产价值占比进行分配。
       </div>
-      <div class="notyetopen-btn mh-center">暂未开放</div>
+      <div class="notyetopen-btn disabled mh-center">进入</div>
     </div>
 
     <div class="banner">
@@ -43,7 +51,7 @@
         游戏内与钱包资产的互转，存入是指将用户钱包资产存入到游戏内，提取是指将游戏资产提取到钱包中。<br>
         目前允许存入资产包括5星、6星神灵、精灵蛋、精灵、三种类别的钻石卡。允许提取的资产包括5星、6星神灵、精灵、钻石。
       </div>
-      <div class="notyetopen-btn mh-center">暂未开放</div>
+      <div class="notyetopen-btn disabled mh-center">进入</div>
     </div>
 
     <!-- <div class="home-title mh-center">兑换</div>
@@ -87,12 +95,16 @@
 
 <script>
 import Rule from "@/components/Rule";
+import { diamondsOption, diamondsPrice } from "@/utils/status";
 export default {
   name: "Home",
   components: { Rule },
   computed: {},
   data() {
-    return {};
+    return {
+      diamondsPrice,
+      diamondsOption
+    };
   },
   created() {},
   mounted() {},
@@ -100,8 +112,11 @@ export default {
     handleRule() {
       this.$refs["Rule"].init();
     },
-    beginGame(){
-      this.$router.push({ name: 'Game' });
+    beginGame() {
+      this.$router.push({ name: "Game" });
+    },
+    goBuy() {
+      this.$router.push({ path: "/game/purchase" });
     }
   }
 };
@@ -118,6 +133,9 @@ export default {
     padding-top: 240px;
     position: relative;
     margin-bottom: 36px;
+    background-image: url("../../assets/home/banner.png");
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
     .logo {
       width: 186px;
       height: 112px;
@@ -154,18 +172,22 @@ export default {
         color: #d60019;
       }
     }
-    .purchase-btn {
-      width: 500px;
-      height: 62px;
-      background-color: #b9965f;
-      border-radius: 12px;
-      font-size: 36px;
-      font-family: PingFang SC;
-      font-weight: 600;
-      color: #ffffff;
-      margin: 0 auto;
-      margin-bottom: 6px;
-    }
+  }
+  .purchase-btn {
+    width: 500px;
+    height: 62px;
+    background-color: #b9965f;
+    border-radius: 12px;
+    font-size: 36px;
+    font-family: PingFang SC;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 0 auto;
+    margin-bottom: 6px;
+  }
+  .purchase-btns {
+    margin-top: 38px;
+    margin-bottom: 0;
   }
   .banner {
     margin-bottom: 26px;
@@ -198,12 +220,15 @@ export default {
       margin-top: 24px;
       width: 500px;
       height: 62px;
-      background: rgba(0, 0, 0, 0.5);
+      background: #b9965f;
       border-radius: 12px;
       font-size: 36px;
       font-family: PingFang SC;
       font-weight: 600;
       color: #ffffff;
+    }
+    .notyetopen-btn.disabled {
+      background-color: rgba(0, 0, 0, 0.5);
     }
   }
   .home-title {
@@ -218,6 +243,26 @@ export default {
     font-family: PingFang SC;
     font-weight: bold;
     color: #5e3a11;
+  }
+  .optionBox {
+    padding: 0 16px;
+    padding-bottom: 34px;
+    .option {
+      padding: 30px 60px;
+      border-bottom: 1px dashed #c5ac84;
+      .label {
+        font-size: 32px;
+        font-family: PingFang SC;
+        font-weight: 600;
+        color: #452b0d;
+      }
+      .val {
+        font-size: 32px;
+        font-family: PingFang SC;
+        font-weight: 400;
+        color: #40519d;
+      }
+    }
   }
 }
 </style>
