@@ -15,6 +15,8 @@
         "ethHost": "wss://ws-testnet.hecochain.com",
         "usdt_receiver": "0xcbdf73b671160836a7Fa9A0319Cc2B87b01F9752",
         "nft_receiver": "0xcbdf73b671160836a7Fa9A0319Cc2B87b01F9752",
+        "diamondcard": "0x0D4D44441196C8d07a423B10b086839C201FFaB3",
+        "diamondcardpool": "0x9dA6C20316965c6AA122d89Ac6765ecd03Bd28E1",
         "chainId": 256
     },
     "ht_main": {
@@ -27,6 +29,8 @@
         "ethHost": "wss://ws-mainnet-node.huobichain.com",
         "usdt_receiver": "0x8f04C40F742EA8Dd875537B54E5A1A6f556bAEDF",
         "nft_receiver": "0xac3b316bb782cb4587A7FD2522e0161E702BA579",
+        "diamondcard": "",
+        "diamondcardpool": "",
         "chainId": 128
     }
 }
