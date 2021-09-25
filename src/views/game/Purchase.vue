@@ -43,19 +43,22 @@
         （限时优惠）
       </div>
       <div v-if="status == 4" class="foot_btn text-center" @click="buyMP(mp, amount)">立即购买</div>
-      <div v-else class="foot_btn text-center">游戏角色未创建</div>
+      <div v-else class="foot_btn foot_btn_disabled text-center">立即购买</div>
       <div class="foot-tip">
         请注意：须使用注册的账号和密码登录游戏客户端，并且创建角色，才能购买钻石
+        <span @click="handleRule">请查看规则</span>
       </div>
     </div>
     <LoadingModal ref="LoadingModal" />
     <TipModal ref="TipModal" />
+    <Rule ref="Rule"></Rule>
   </div>
 </template>
 
 <script>
 import LoadingModal from "@/components/Loading";
 import TipModal from "@/components/TipModal";
+import Rule from "@/components/Rule";
 import { MPShopContract } from "@/xworldjs/mp_shop";
 import { UsdtContract } from "@/xworldjs/usdt";
 import { mapGetters } from "vuex";
@@ -64,7 +67,7 @@ import { purchaseInterfaceApi, drawInterfaceApi } from "@/api/user";
 import { diamondsPrice } from "@/utils/status";
 export default {
   name: "Purchase",
-  components: { LoadingModal, TipModal },
+  components: { LoadingModal, TipModal, Rule },
   computed: {
     ...mapGetters(["accountInfo", "account", "web3"])
   },
@@ -119,7 +122,7 @@ export default {
       let userInfo = this.accountInfo;
       this.$refs["LoadingModal"].initData();
       let myUSDT = await this.balanceOfUsdt(userInfo.userId);
-      console.log("===myUSDT=====", myUSDT,  amount);
+      console.log("===myUSDT=====", myUSDT, amount);
 
       if (myUSDT < amount) {
         this.$refs["LoadingModal"].close();
@@ -127,7 +130,10 @@ export default {
         that.$refs["TipModal"].initData("额度不足");
         return;
       }
-      const usdt = await this.usdtContract.allowance(that.account, that.config.shop);
+      const usdt = await this.usdtContract.allowance(
+        that.account,
+        that.config.shop
+      );
       console.log("===usdt=====", usdt);
       if (usdt < amount) {
         //授权
@@ -232,12 +238,17 @@ export default {
      * @param amount
      * @param price
      * @returns {Promise<void>}
-     * 
+     *
      */
     async goBuyMP(requestId, price, callback) {
       let that = this;
-      console.log('buyMP:::::', getUsdtPrice(price))
-      await this.mpShopContract.buyMP(requestId, getUsdtPrice(price), that.account, callback);
+      console.log("buyMP:::::", getUsdtPrice(price));
+      await this.mpShopContract.buyMP(
+        requestId,
+        getUsdtPrice(price),
+        that.account,
+        callback
+      );
     },
     getDraw() {
       drawInterfaceApi({
@@ -254,6 +265,9 @@ export default {
           }
         })
         .catch(error => {});
+    },
+    handleRule() {
+      this.$refs["Rule"].init();
     }
   }
 };
@@ -286,7 +300,7 @@ export default {
           width: 48px;
           margin-right: 16px;
         }
-        .usdtImg{
+        .usdtImg {
           width: 69px;
         }
       }
@@ -367,6 +381,9 @@ export default {
       text-shadow: 0px 1px 3px rgba(0, 0, 0, 0.16);
       margin-top: 166px;
     }
+    .foot_btn_disabled {
+      background-image: url("../../assets/game/ios_bg.png");
+    }
     .foot-tip {
       margin: 0 auto;
       margin-top: 126px;
@@ -377,6 +394,13 @@ export default {
       color: #56412e;
       text-align: center;
       margin-bottom: 10px;
+      span {
+        font-size: 36px;
+        font-family: PingFang SC;
+        font-weight: bold;
+        color: #d60019;
+        text-decoration: underline;
+      }
     }
   }
 }

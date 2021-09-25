@@ -2,8 +2,8 @@
   <div class="purchase-page">
     <div class="box">
       <div class="header mh-flex mh-align-between">
-        <div>钱包余额：12USDT</div>
-        <div>游戏内余额：2365钻石</div>
+        <div>钱包余额：{{myUSDT}}USDT</div>
+        <!-- <div>游戏内余额：2365钻石</div> -->
       </div>
       <div class="section mh-flex mh-center">
         <div class="usdt mh-center">
@@ -11,29 +11,30 @@
           USDT
         </div>
         <img class="right" src="@/assets/game/right.png" alt="">
-        <div class="usdt mh-center" @click="chooseCard">
+        <div class="usdt mh-center text-center">
           <img src="@/assets/common/card.png" alt="">
-          {{cardInfo.name}}
-          <img class="bottom_icon" src="@/assets/common/bottom_icon.png" alt="">
+          {{cardInfo.name}}<br>
+          （{{cardInfo.val}}）
+          <!-- <img class="bottom_icon" src="@/assets/common/bottom_icon.png" alt=""> -->
         </div>
       </div>
 
       <div class="num-con mh-flex">
         <div class="transferout mh-flex mh-vertical-center mh-flex-1" @click="show = !show">
-          转出数量
-          <div class="triangle"></div>
+          转出数量{{amountPrice}}
+          <!-- <div class="triangle"></div>
           <div class="select-list" v-if="show">
             <div class="select-item" :class="{active: amount == 50}" @click="getUsdt(50)">50USDT</div>
             <div class="select-item" :class="{active: amount == 100}" @click="getUsdt(100)">100USDT</div>
             <div class="select-item" :class="{active: amount == 500}" @click="getUsdt(500)">500USDT</div>
             <div class="select-item" :class="{active: amount == 1000}" @click="getUsdt(1000)">1000USDT</div>
-          </div>
+          </div> -->
         </div>
         <div class="transferout received mh-flex mh-vertical-center mh-flex-1" @click="receivedShow = !receivedShow">
-          收到数量
+          收到数量{{amount}}
           <div class="triangle"></div>
           <div class="select-list num-list" v-if="receivedShow">
-            <div class="select-item" :class="{active: num == item.val}" @click="getNum(item.val)" v-for="(item, index) in receivedOption" :key="index">{{item.name}}</div>
+            <div class="select-item" :class="{active: amount == item.val}" @click="getNum(item.val)" v-for="(item, index) in receivedOption" :key="index">{{item.name}}</div>
           </div>
         </div>
       </div>
@@ -47,7 +48,7 @@
         <span>0</span>
         （限时优惠）
       </div>
-      <div class="foot_btn text-center">立即购买</div>
+      <div class="foot_btn text-center" @click="buyNft">立即购买</div>
     </div>
     <LoadingModal ref="LoadingModal" />
     <TipModal ref="TipModal" />
@@ -61,21 +62,32 @@ import TipModal from "@/components/TipModal";
 import CardModal from "@/components/CardModal";
 import { mapGetters } from "vuex";
 import { diamondsOption, diamondsPrice, receivedOption } from "@/utils/status";
+import { DiamondCardContract } from "@/xworldjs/diamond_card";
+import { UsdtContract } from "@/xworldjs/usdt";
+import { getConfig, getUsdtPrice } from "@/config";
 export default {
   name: "CardPurchase",
   components: { LoadingModal, TipModal, CardModal },
   computed: {
-    ...mapGetters(["accountInfo", "account", "web3"])
+    ...mapGetters(["accountInfo", "account", "web3"]),
+    amountPrice() {
+      return this.amount * diamondsPrice * this.cardInfo.val
+    }
   },
   data() {
     return {
       show: false,
       diamondsPrice,
       cardInfo: diamondsOption[0],
-      amount: 100,
+      amount: 4,
       receivedOption,
       receivedShow: false,
       num: 1,
+
+      diamondCardContract: new DiamondCardContract(),
+      usdtContract: new UsdtContract(),
+      config: getConfig(),
+      myUSDT: 0
     };
   },
   watch: {
@@ -86,7 +98,17 @@ export default {
           this.accountInfo.userId &&
           this.accountInfo.token
         ) {
-          //   this.getDraw();
+          this.usdtContract
+            .init(this.web3.currentProvider, this.config.usdt)
+            .then(() => {
+              this.balanceOfUsdt(this.accountInfo.userId).then(res => {
+                this.myUSDT = res;
+              });
+            });
+          this.diamondCardContract.init(
+            this.web3.currentProvider,
+            this.config.diamondcard
+          );
         }
       },
       deep: true,
@@ -96,12 +118,8 @@ export default {
   created() {},
   mounted() {},
   methods: {
-    getUsdt(val) {
-      this.amount = val;
-      // this.mp = this.amount / this.diamondsPrice;
-    },
-    getNum(num){
-      this.num = num;
+    getNum(num) {
+      this.amount = num;
     },
     chooseCard() {
       this.$refs["CardModal"].initData(this.cardInfo);
@@ -109,21 +127,79 @@ export default {
     getCard(item) {
       this.cardInfo = item;
     },
-    getDraw() {
-      drawInterfaceApi({
-        cmd: "GET_GAME_DRAW_STATUS",
-        requestUserId: this.accountInfo.userId,
-        token: this.accountInfo.token,
-        requestTime: new Date().valueOf()
-      })
-        .then(response => {
-          if (response.code == 1) {
-            this.status = response.status;
-          } else {
-            Toast(response.errorMessage);
-          }
-        })
-        .catch(error => {});
+    async buyNft() {
+      let that = this;
+      let amount = this.amount;
+      let amountPrice = amount * diamondsPrice * this.cardInfo.val;
+      let userInfo = this.accountInfo;
+      this.$refs["LoadingModal"].initData();
+      let myUSDT = await this.balanceOfUsdt(userInfo.userId);
+      console.log("===myUSDT=====", myUSDT, amount, amountPrice);
+
+      if (myUSDT < amountPrice) {
+        this.$refs["LoadingModal"].close();
+        console.error("额度不足");
+        that.$refs["TipModal"].initData("额度不足");
+        return;
+      }
+
+      const usdt = await this.usdtContract.allowance(
+        that.account,
+        that.config.diamondcard
+      );
+      console.log("===usdt=====", usdt);
+      if (usdt < amountPrice) {
+        //授权
+        await that.approveUsdt(myUSDT);
+      }
+
+      try {
+        const data = await that.goBuyNft(this.cardInfo.val, amount, err => {
+          that.$refs["LoadingModal"].close();
+          console.log("error:::123:", err);
+          that.$refs["TipModal"].initData(err);
+        });
+        console.log("data---------", data);
+        console.log("充值成功");
+        that.$refs["LoadingModal"].close();
+        that.$refs["TipModal"].initData("购买成功");
+      } catch (err) {
+        let message = "";
+        if (err.code === 4001) {
+          //TODO 用户取消
+          message = "用户取消交易！";
+        } else {
+          message = "交易失败：交易id：" + err.hash;
+        }
+        console.error("buyMP error::::", message);
+        that.$refs["LoadingModal"].close();
+        that.$refs["TipModal"].initData(message);
+      }
+    },
+    async balanceOfUsdt(user) {
+      return this.usdtContract.balanceOfUsdt(user);
+    },
+    async approveUsdt(price) {
+      let that = this;
+      return await this.usdtContract.approve(
+        getUsdtPrice(price),
+        that.config.diamondcard,
+        that.account
+      );
+    },
+    async goBuyNft(tokenid, amount, callback) {
+      let that = this;
+      await this.diamondCardContract.buyDiamondNft(
+        tokenid,
+        amount,
+        "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "0x0000000000000000000000000000000000000000000000000000000000000000",
+        0,
+        "0x0000000000000000000000000000000000000000",
+        0,
+        that.account,
+        callback
+      );
     }
   }
 };
@@ -169,7 +245,7 @@ export default {
         width: 54px;
         height: 78px;
         margin-left: 106px;
-        margin-right: 30px;
+        margin-right: 62px;
       }
     }
     .num-con {
@@ -217,7 +293,7 @@ export default {
         background-color: rgba(213, 145, 61, 0.3);
       }
     }
-    .num-list{
+    .num-list {
       left: -20px;
     }
     .text {

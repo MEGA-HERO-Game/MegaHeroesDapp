@@ -37,9 +37,9 @@
     <div class="box">
       <div class="name text-center">质押</div>
       <div class="content">
-        Mega Hero将部分的平台收益奖励给质押的用户，质押资产为钻石箱，收益按照区块进行分配，个人的收益按照个人资产价值跟质押总资产价值占比进行分配。
+        Mega Hero将部分的平台收益奖励给质押的用户，质押资产为钻石卡，收益按照区块进行分配，个人的收益按照个人资产价值跟质押总资产价值占比进行分配。
       </div>
-      <div class="notyetopen-btn disabled mh-center">进入</div>
+      <div class="notyetopen-btn disabled mh-center">暂未开启</div>
     </div>
 
     <div class="banner">
@@ -49,9 +49,9 @@
       <div class="name text-center">存入与提取</div>
       <div class="content">
         游戏内与钱包资产的互转，存入是指将用户钱包资产存入到游戏内，提取是指将游戏资产提取到钱包中。<br>
-        目前允许存入资产包括5星、6星神灵、精灵蛋、精灵、三种类别的钻石卡。允许提取的资产包括5星、6星神灵、精灵、钻石。
+        目前允许存入资产包括5星、6星神灵、精灵蛋、精灵、钻石卡。允许提取的资产包括5星、6星神灵、精灵、钻石。
       </div>
-      <div class="notyetopen-btn disabled mh-center">进入</div>
+      <div class="notyetopen-btn disabled mh-center">暂未开启</div>
     </div>
 
     <!-- <div class="home-title mh-center">兑换</div>

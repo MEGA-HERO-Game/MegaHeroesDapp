@@ -19,8 +19,8 @@
         <div class="text">④购买钻石的功能必须在创建角色状态下，才能使用</div>
       </div>
       <div class="item">
-        <div class="title">3、质押</div>
-        <div class="text">①质押的资产为三种类别的钻石卡，通过购买钻石卡功能获得质押资产</div>
+        <div class="title">3、质押（暂未开启）</div>
+        <div class="text">①质押资产为钻石卡，通过购买钻石卡功能获得质押资产</div>
         <div class="text">②质押资产的用户分配的收益为USDT，来源为用户购买钻石和钻石卡消耗的USDT，其中60%会进入分红池</div>
         <div class="text">③个人的收益按照个人质押资产价值跟质押总资产价值占比进行分配</div>
         <div class="text">④年化收益率=过去24小时分配的USDT*365/质押钻石总价值</div>

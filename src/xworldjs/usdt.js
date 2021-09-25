@@ -21,4 +21,12 @@ export class UsdtContract {
     return (await this.contract.allowance(owner, to)) / parseInt(getUsdtPointNumber())
   }
 
+  async balanceOfUsdt(user) {
+    console.log('usdt::::123', user)
+    const t = await this.contract.balanceOf(user)
+    console.log('usdt::::1245', t.toString())
+
+    return (t / parseInt(getUsdtPointNumber()));
+  }
+
 }

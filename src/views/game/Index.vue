@@ -27,7 +27,7 @@
         IOS下载
       </div>
     </div>
-    <div class="btn_con android_btn_img">
+    <div class="btn_con android_btn_img" @click="downLoad(2)">
       <div class="android mh-center">
         <img src="@/assets/game/android.png" alt="">
         Android下载
@@ -91,6 +91,11 @@ export default {
           }
         })
         .catch(error => {});
+    },
+    downLoad(val) {
+      if (val == 2) {
+        window.location.href = "https://down.cindywj.cn/MegaHero.apk";
+      }
     }
   }
 };

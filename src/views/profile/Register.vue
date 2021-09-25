@@ -1,10 +1,10 @@
 <template>
   <div class="register-page">
     <div class="bg_title text-center">
-      邮箱绑定
+      邮箱注册
     </div>
     <div class="title text-center">
-      请使用注册成功的邮箱或手机号<br>
+      请使用注册成功的邮箱和密码<br>
       登录游戏客户端
     </div>
     <!-- <div class="nav mh-center">
