@@ -29,6 +29,7 @@
 import { Toast } from "vant";
 import { userInterfaceApi } from "@/api/user";
 import { mapGetters } from "vuex";
+const md5 = require('md5');
 export default {
   name: "Register",
   components: {},
@@ -69,7 +70,7 @@ export default {
         token: this.accountInfo.token,
         requestTime: new Date().valueOf(),
         email: this.email,
-        password: this.password
+        password: md5(this.password)
       })
         .then(response => {
           if (response.code == 1) {
