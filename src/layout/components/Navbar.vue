@@ -2,7 +2,7 @@
   <div class="navbar-page" :class="{navbarActive: show}">
     <div class="mh-flex mh-vertical-center mh-align-between">
       <div class="logoCon">
-        <img class="logo" src="@/assets/layout/logo.png" alt="">
+        <img @click="goHome" class="logo" src="@/assets/layout/logo.png" alt="">
       </div>
       <div v-if="account" class="userInfo mh-flex mh-vertical-center">
         <img class="network" src="@/assets/layout/network.png" alt="">
@@ -96,6 +96,12 @@ export default {
     editFun() {
       window.location.href =
         "http://megahero.games:25001/rebind.html?addr=" + this.account;
+    },
+    goHome() {
+      if (this.getRouteName == "Home") {
+        return;
+      }
+      this.$router.push({ path: "/" });
     }
   }
 };
