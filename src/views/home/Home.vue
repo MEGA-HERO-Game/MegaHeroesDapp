@@ -6,14 +6,14 @@
     <div class="game-banner">
       <img class="logo" src="@/assets/home/logo.png" alt="">
       <div class="rule-btn mh-center" @click="handleRule">规则说明</div>
-      <div class="home-title mh-center" @click="beginGame">开始游戏</div>
+      <div class="home-title mh-center" @click="jumpPage(1)">开始游戏</div>
     </div>
     <div class="purchase-box">
       <div class="purchase-text text-center">
         钻石价格：{{diamondsPrice}}USDT
         <span>（限时五折优惠）</span>
       </div>
-      <div class="purchase-btn mh-center" @click="goBuy">立即购买</div>
+      <div class="purchase-btn mh-center" @click="jumpPage(2)">立即购买</div>
     </div>
 
     <div class="box optionBox">
@@ -21,7 +21,7 @@
         <div class="label">{{item.name}}</div>
         <div class="val">（价值{{item.val}}钻石）</div>
       </div>
-      <div @click="jumpPage(1)" class="purchase-btn mh-center purchase-btns">立即购买</div>
+      <div @click="jumpPage(3)" class="purchase-btn mh-center purchase-btns">立即购买</div>
     </div>
     <!-- <div class="box">
       <img class="logo" src="@/assets/home/logo.png" alt="">
@@ -39,7 +39,7 @@
       <div class="content">
         Mega Hero将部分的平台收益奖励给质押的用户，质押资产为钻石卡，收益按照区块进行分配，个人的收益按照个人资产价值跟质押总资产价值占比进行分配。
       </div>
-      <div @click="jumpPage(2)" class="notyetopen-btn mh-center">进入</div>
+      <div @click="jumpPage(4)" class="notyetopen-btn mh-center">进入</div>
     </div>
 
     <div class="banner">
@@ -96,10 +96,13 @@
 <script>
 import Rule from "@/components/Rule";
 import { diamondsOption, diamondsPrice } from "@/utils/status";
+import { mapGetters } from "vuex";
 export default {
   name: "Home",
   components: { Rule },
-  computed: {},
+  computed: {
+    ...mapGetters(["account"])
+  },
   data() {
     return {
       diamondsPrice,
@@ -112,16 +115,18 @@ export default {
     handleRule() {
       this.$refs["Rule"].init();
     },
-    beginGame() {
-      this.$router.push({ name: "Game" });
-    },
-    goBuy() {
-      this.$router.push({ path: "/game/purchase" });
-    },
-    jumpPage(val){
-      if(val == 1){
+    jumpPage(val) {
+      if (!this.account) {
+        this.$store.dispatch("web3/connectWallet");
+        return;
+      }
+      if (val == 1) {
+        this.$router.push({ name: "Game" });
+      } else if (val == 2) {
+        this.$router.push({ path: "/game/purchase" });
+      } else if (val == 3) {
         this.$router.push({ path: "/card" });
-      }else if(val == 2){
+      } else if (val == 4) {
         this.$router.push({ path: "/pledge" });
       }
     }
