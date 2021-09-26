@@ -12,6 +12,7 @@
         <img class="network" src="@/assets/layout/network.png" alt="">
         <div class="name">连接钱包</div>
       </div>
+      <div @click="editFun" class="editPass" v-if="accountInfo && accountInfo.userId">修改密码</div>
       <!-- <img @click="show = !show" class="menu" src="@/assets/layout/menu.png" alt=""> -->
     </div>
     <div class="pop">
@@ -71,7 +72,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["account"]),
+    ...mapGetters(["account", "accountInfo"]),
     getRouteName() {
       const route = this.$route;
       return route.name;
@@ -91,6 +92,10 @@ export default {
       this.$store.dispatch("web3/connectWallet").then(() => {
         console.log("this.account", this.account);
       });
+    },
+    editFun() {
+      window.location.href =
+        "http://megahero.games:25001/rebind.html?addr=" + this.account;
     }
   }
 };
@@ -132,6 +137,15 @@ export default {
       font-weight: 500;
       color: #d7caab;
     }
+  }
+  .editPass {
+    height: 100%;
+    padding: 0 10px 0 32px;
+    font-size: 32px;
+    font-family: PingFang SC;
+    font-weight: 500;
+    line-height: 48px;
+    color: #d7caab;
   }
   .menu {
     width: 58px;

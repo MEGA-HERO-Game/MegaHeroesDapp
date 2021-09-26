@@ -16,13 +16,13 @@
       <div class="purchase-btn mh-center" @click="goBuy">立即购买</div>
     </div>
 
-    <!-- <div class="box optionBox">
+    <div class="box optionBox">
       <div class="option mh-flex mh-align-between" v-for="(item, index) in diamondsOption" :key="index">
         <div class="label">{{item.name}}</div>
         <div class="val">（价值{{item.val}}钻石）</div>
       </div>
-      <div class="purchase-btn mh-center purchase-btns">立即购买</div>
-    </div> -->
+      <div @click="jumpPage(1)" class="purchase-btn mh-center purchase-btns">立即购买</div>
+    </div>
     <!-- <div class="box">
       <img class="logo" src="@/assets/home/logo.png" alt="">
       <div class="content">
@@ -39,7 +39,7 @@
       <div class="content">
         Mega Hero将部分的平台收益奖励给质押的用户，质押资产为钻石卡，收益按照区块进行分配，个人的收益按照个人资产价值跟质押总资产价值占比进行分配。
       </div>
-      <div class="notyetopen-btn disabled mh-center">暂未开启</div>
+      <div @click="jumpPage(2)" class="notyetopen-btn mh-center">进入</div>
     </div>
 
     <div class="banner">
@@ -117,6 +117,13 @@ export default {
     },
     goBuy() {
       this.$router.push({ path: "/game/purchase" });
+    },
+    jumpPage(val){
+      if(val == 1){
+        this.$router.push({ path: "/card" });
+      }else if(val == 2){
+        this.$router.push({ path: "/pledge" });
+      }
     }
   }
 };
