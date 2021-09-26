@@ -5,14 +5,14 @@
       <div class="content">
         <div class="mh-flex mh-vertical-center mh-align-between">
           <div class="name">钻石卡（500钻石）</div>
-          <div class="name">余额：23</div>
+          <div class="name">余额：{{nftbalance}}</div>
         </div>
         <div class="formCon">
-          <van-field class="mh_input" v-model="password" />
-          <div class="max mh-center">最大值</div>
+          <van-field class="mh_input" v-model="amount" type="digit" />
+          <div class="max mh-center" @click="amount = nftbalance">最大值</div>
         </div>
       </div>
-      <div class="foot_btn text-center">
+      <div class="foot_btn text-center" @click="pledge">
         质押
       </div>
       <div class="footText">☆质押钻石卡的数量须为整数，最低质押数量为1。</div>
@@ -27,6 +27,9 @@ import LoadingModal from "@/components/Loading";
 import TipModal from "@/components/TipModal";
 import { mapGetters } from "vuex";
 import { diamondsOption, diamondsPrice, receivedOption } from "@/utils/status";
+import { DiamondNFTContract } from "@/xworldjs/diamond_NFT";
+import { getConfig, getUsdtPrice } from "@/config";
+import { Toast } from "vant";
 export default {
   name: "PledgeForm",
   components: { LoadingModal, TipModal },
@@ -34,7 +37,13 @@ export default {
     ...mapGetters(["accountInfo", "account", "web3"])
   },
   data() {
-    return {};
+    return {
+      amount: null,
+      config: getConfig(),
+      diamondNFTContract: new DiamondNFTContract(),
+      tokenid: 500, //写死 id  目前就一档
+      nftbalance: 0 //获取用户钻石卡余额
+    };
   },
   watch: {
     accountInfo: {
@@ -44,7 +53,7 @@ export default {
           this.accountInfo.userId &&
           this.accountInfo.token
         ) {
-          //   this.getDraw();
+          this.initData();
         }
       },
       deep: true,
@@ -53,7 +62,53 @@ export default {
   },
   created() {},
   mounted() {},
-  methods: {}
+  methods: {
+    async initData() {
+      await this.diamondNFTContract.init(
+        this.web3.currentProvider,
+        this.config.diamondcard
+      );
+      this.getData();
+    },
+    async getData() {
+      // 获取用户钻石卡余额
+      this.diamondNFTContract
+        .balanceOf(this.account, this.tokenid)
+        .then(res => {
+          this.nftbalance = res;
+          console.log("nftbalance", this.nftbalance);
+        });
+    },
+    pledge() {
+      if (!this.amount || this.amount == 0) {
+        Toast("请输入质押数量");
+        return;
+      }
+      if (this.amount > this.nftbalance) {
+        Toast("质押数量不能大于余额");
+        return;
+      }
+      this.$refs["LoadingModal"].initData();
+      this.diamondNFTContract
+        .safeTransferFrom(
+          this.account,
+          this.config.diamondcardpool,
+          this.tokenid,
+          getUsdtPrice(this.amount)
+        )
+        .then(data => {
+          // success
+          this.$refs["LoadingModal"].close();
+          this.$refs["TipModal"].initData("质押成功");
+          this.getData();
+        })
+        .catch(error => {
+          // Failure
+          this.$refs["LoadingModal"].close();
+          this.$refs["TipModal"].initData("交易失败");
+        });
+    }
+  }
 };
 </script>
 <style lang="scss" scoped>
@@ -114,11 +169,11 @@ export default {
       text-shadow: 0px 1px 3px rgba(0, 0, 0, 0.16);
       margin-top: 100px;
     }
-    .footText{
+    .footText {
       font-size: 28px;
       font-family: Alibaba PuHuiTi;
       font-weight: 400;
-      color: #5E2F2F;
+      color: #5e2f2f;
       padding: 244px 28px 100px 28px;
     }
   }
