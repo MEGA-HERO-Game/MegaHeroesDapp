@@ -5,14 +5,14 @@
       <div class="content">
         <div class="mh-flex mh-vertical-center mh-align-between">
           <div class="name">钻石卡（500钻石）</div>
-          <div class="name">余额：23</div>
+          <div class="name">余额：{{num}}</div>
         </div>
         <div class="formCon">
-          <van-field class="mh_input" v-model="password" />
-          <div class="max mh-center">最大值</div>
+          <van-field class="mh_input" v-model="amount" type="digit" />
+          <div class="max mh-center" @click="amount = num">最大值</div>
         </div>
       </div>
-      <div class="foot_btn text-center">
+      <div class="foot_btn text-center" @click="withdraw">
         解除质押
       </div>
       <div class="footText">☆解除质押钻石卡的数量须为整数，最低解除质押数量为1。<br>☆可一次性解除全部质押资产，也可解除部分质押资产。</div>
@@ -26,7 +26,10 @@
 import LoadingModal from "@/components/Loading";
 import TipModal from "@/components/TipModal";
 import { mapGetters } from "vuex";
+import { DiamondPoolsContract } from "@/xworldjs/diamond_pools";
+import { getConfig, getUsdtPrice } from "@/config";
 import { diamondsOption, diamondsPrice, receivedOption } from "@/utils/status";
+import { Toast } from "vant";
 export default {
   name: "RelieveForm",
   components: { LoadingModal, TipModal },
@@ -34,7 +37,15 @@ export default {
     ...mapGetters(["accountInfo", "account", "web3"])
   },
   data() {
-    return {};
+    return {
+      amount: null,
+      diamondsPrice,
+      tokenid: 500, //写死 id  目前就一档
+      config: getConfig(),
+      diamondPoolsContract: new DiamondPoolsContract(),
+      dataList: [],
+      num: 0
+    };
   },
   watch: {
     accountInfo: {
@@ -44,7 +55,7 @@ export default {
           this.accountInfo.userId &&
           this.accountInfo.token
         ) {
-          //   this.getDraw();
+          this.initData();
         }
       },
       deep: true,
@@ -53,7 +64,62 @@ export default {
   },
   created() {},
   mounted() {},
-  methods: {}
+  methods: {
+    async initData() {
+      await this.diamondPoolsContract.init(
+        this.web3.currentProvider,
+        this.config.diamondcardpool
+      );
+      this.getData();
+    },
+    async getData() {
+      // 质押的数据列表
+      this.diamondPoolsContract.getUserDepositList(this.account).then(res => {
+        console.log("质押的数据列表", res);
+        let _ids = res["_ids"];
+        let _values = res["_values"];
+        let dataList = [];
+        for (let i = 0; i < _ids.length; i++) {
+          dataList.push({
+            name: _ids[i].toString(),
+            amount: _values[i].toString(),
+            value:
+              parseFloat(_values[i].toString()) *
+              parseFloat(_values[i].toString()) *
+              this.diamondsPrice
+          });
+          if (_ids[i].toString() == this.tokenid) {
+            this.num = _values[i].toString();
+          }
+        }
+        this.dataList = dataList;
+      });
+    },
+    withdraw() {
+      if (!this.amount || this.amount == 0) {
+        Toast("请输入解除数量");
+        return;
+      }
+      if (this.amount > this.num) {
+        Toast("解除数量不能大于质押数量");
+        return;
+      }
+      this.$refs["LoadingModal"].initData();
+      this.diamondPoolsContract
+        .withdraw(this.tokenid, getUsdtPrice(this.amount))
+        .then(data => {
+          // success
+          this.$refs["LoadingModal"].close();
+          this.$refs["TipModal"].initData("解除成功");
+          this.getData();
+        })
+        .catch(error => {
+          // Failure
+          this.$refs["LoadingModal"].close();
+          this.$refs["TipModal"].initData("交易失败");
+        });
+    }
+  }
 };
 </script>
 <style lang="scss" scoped>
@@ -114,11 +180,11 @@ export default {
       text-shadow: 0px 1px 3px rgba(0, 0, 0, 0.16);
       margin-top: 100px;
     }
-    .footText{
+    .footText {
       font-size: 28px;
       font-family: Alibaba PuHuiTi;
       font-weight: 400;
-      color: #5E2F2F;
+      color: #5e2f2f;
       padding: 244px 28px 28px 28px;
     }
   }
