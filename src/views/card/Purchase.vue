@@ -62,7 +62,7 @@ import TipModal from "@/components/TipModal";
 import CardModal from "@/components/CardModal";
 import { mapGetters } from "vuex";
 import { diamondsOption, diamondsPrice, receivedOption } from "@/utils/status";
-import { DiamondCardContract } from "@/xworldjs/diamond_card";
+import { DiamondNFTContract } from "@/xworldjs/diamond_NFT";
 import { UsdtContract } from "@/xworldjs/usdt";
 import { getConfig, getUsdtPrice } from "@/config";
 export default {
@@ -84,7 +84,7 @@ export default {
       receivedShow: false,
       num: 1,
 
-      diamondCardContract: new DiamondCardContract(),
+      diamondNFTContract: new DiamondNFTContract(),
       usdtContract: new UsdtContract(),
       config: getConfig(),
       myUSDT: 0
@@ -105,7 +105,7 @@ export default {
                 this.myUSDT = res;
               });
             });
-          this.diamondCardContract.init(
+          this.diamondNFTContract.init(
             this.web3.currentProvider,
             this.config.diamondcard
           );
@@ -189,7 +189,7 @@ export default {
     },
     async goBuyNft(tokenid, amount, callback) {
       let that = this;
-      await this.diamondCardContract.buyDiamondNft(
+      await this.diamondNFTContract.buyDiamondNft(
         tokenid,
         amount,
         "0x0000000000000000000000000000000000000000000000000000000000000000",

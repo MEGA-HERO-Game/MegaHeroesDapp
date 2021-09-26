@@ -1,12 +1,12 @@
 import contract from '@truffle/contract';
-import Diamond_Card_ABI from '@/contracts/DiamondCard.json';
+import DIAMOND_NFT_ABI from '@/contracts/diamondNFT.abi.json';
 import { getUsdtPointNumber } from "../config";
 import Web3 from "web3";
 
 
-export class DiamondCardContract {
+export class DiamondNFTContract {
   async init(provider, tokenAddress) {
-    const ccc = contract(Diamond_Card_ABI);
+    const ccc = contract({"abi": DIAMOND_NFT_ABI});
     ccc.setProvider(provider);
     this.contract = await ccc.at(tokenAddress);
   }

@@ -1,4 +1,4 @@
 {
-  "runType": "ht-main",
-  "isTest": false
+  "runType": "ht-dev",
+  "isTest": true
 }
