@@ -71,7 +71,7 @@ export default {
   computed: {
     ...mapGetters(["accountInfo", "account", "web3"]),
     amountPrice() {
-      return this.amount * diamondsPrice * this.cardInfo.val
+      return this.amount * diamondsPrice * this.cardInfo.val;
     }
   },
   data() {
@@ -150,31 +150,34 @@ export default {
       console.log("===usdt=====", usdt);
       if (usdt < amountPrice) {
         //授权
-        await that.approveUsdt(myUSDT);
+        try {
+          await that.approveUsdt(myUSDT);
+        } catch (err) {
+          console.log("授权失败");
+        }
       }
 
-      try {
-        const data = await that.goBuyNft(this.cardInfo.val, amount, err => {
-          that.$refs["LoadingModal"].close();
-          console.log("error:::123:", err);
-          that.$refs["TipModal"].initData(err);
+      this.diamondNFTContract
+        .buyDiamondNft(
+          this.cardInfo.val,
+          amount,
+          0,
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "0x0000000000000000000000000000000000000000",
+          0,
+          this.account
+        )
+        .then(data => {
+          // success
+          this.$refs["LoadingModal"].close();
+          this.$refs["TipModal"].initData("购买成功");
+        })
+        .catch(error => {
+          // Failure
+          this.$refs["LoadingModal"].close();
+          this.$refs["TipModal"].initData("交易失败");
         });
-        console.log("data---------", data);
-        console.log("充值成功");
-        that.$refs["LoadingModal"].close();
-        that.$refs["TipModal"].initData("购买成功");
-      } catch (err) {
-        let message = "";
-        if (err.code === 4001) {
-          //TODO 用户取消
-          message = "用户取消交易！";
-        } else {
-          message = "交易失败：交易id：" + err.hash;
-        }
-        console.error("buyMP error::::", message);
-        that.$refs["LoadingModal"].close();
-        that.$refs["TipModal"].initData(message);
-      }
     },
     async balanceOfUsdt(user) {
       return this.usdtContract.balanceOfUsdt(user);
@@ -185,20 +188,6 @@ export default {
         getUsdtPrice(price),
         that.config.diamondcard,
         that.account
-      );
-    },
-    async goBuyNft(tokenid, amount, callback) {
-      let that = this;
-      await this.diamondNFTContract.buyDiamondNft(
-        tokenid,
-        amount,
-        "0x0000000000000000000000000000000000000000000000000000000000000000",
-        "0x0000000000000000000000000000000000000000000000000000000000000000",
-        0,
-        "0x0000000000000000000000000000000000000000",
-        0,
-        that.account,
-        callback
       );
     }
   }
