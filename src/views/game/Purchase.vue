@@ -3,7 +3,7 @@
     <div class="box">
       <div class="header mh-flex mh-align-between">
         <div>钱包余额：{{myUSDT}}USDT</div>
-        <!-- <div>游戏内余额：2365钻石</div> -->
+        <div v-for="(item, index) in nftList" :key="index" v-if="item.id==amount">游戏内余额：{{item.amount}}钻石</div>
       </div>
       <div class="section mh-flex mh-center">
         <div class="usdt mh-center">
@@ -61,6 +61,7 @@ import TipModal from "@/components/TipModal";
 import Rule from "@/components/Rule";
 import { MPShopContract } from "@/xworldjs/mp_shop";
 import { UsdtContract } from "@/xworldjs/usdt";
+import { MPNFTContract } from "@/xworldjs/mp_nft";
 import { mapGetters } from "vuex";
 import { getConfig, getUsdtPrice } from "@/config";
 import { purchaseInterfaceApi, drawInterfaceApi } from "@/api/user";
@@ -78,12 +79,19 @@ export default {
       mp: 4000,
       mpShopContract: new MPShopContract(),
       usdtContract: new UsdtContract(),
+      mpNFTContract: new MPNFTContract(),
       config: getConfig(),
       mpTimer: null,
       mpTimeOut: 0,
       myUSDT: 0,
       diamondsPrice,
-      status: null //0  2  3  4
+      status: null, //0  2  3  4
+      nftList: [
+        { id: 50, amount: 0 },
+        { id: 100, amount: 0 },
+        { id: 500, amount: 0 },
+        { id: 1000, amount: 0 }
+      ]
     };
   },
   watch: {
@@ -103,6 +111,11 @@ export default {
               });
             });
           this.usdtContract.init(this.web3.currentProvider, this.config.usdt);
+          this.mpNFTContract
+            .init(this.web3.currentProvider, this.config.nft)
+            .then(() => {
+              this.getNFTs();
+            });
         }
       },
       deep: true,
@@ -268,6 +281,14 @@ export default {
     },
     handleRule() {
       this.$refs["Rule"].init();
+    },
+    getNFTs() {
+      this.mpNFTContract.getNFTs(this.account).then(res => {
+        console.log("res", res);
+        if (res && res.length) {
+          this.nftList = res;
+        }
+      });
     }
   }
 };
