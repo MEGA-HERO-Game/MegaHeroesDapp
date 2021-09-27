@@ -5,7 +5,7 @@
       <div class="content">
         <div class="mh-flex mh-vertical-center mh-align-between">
           <div class="name">钻石卡（500钻石）</div>
-          <div class="name">余额：{{nftbalance}}</div>
+          <div class="name">钱包余额：{{nftbalance}}</div>
         </div>
         <div class="formCon">
           <van-field class="mh_input" v-model="amount" type="digit" />
