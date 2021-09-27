@@ -204,7 +204,7 @@ export default {
       let D = this.diamondsPrice;
       // 可分配的U * 一年要分出去U的比例 / 已经质押的资产价值
       console.log("X Y Z C D", X, Y, Z, C, D);
-      this.apy = ((X - Y) * ((Z * 10512000) / 1000000000)) / (C * D);
+      this.apy = ((X - Y) * ((Z * 10512000) / 100)) / (C * D);
     },
     claim() {
       // 领取
