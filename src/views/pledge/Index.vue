@@ -80,6 +80,7 @@ export default {
   },
   data() {
     return {
+      cardInfo: diamondsOption[0],
       diamondsPrice,
       diamondNFTContract: new DiamondNFTContract(),
       diamondPoolsContract: new DiamondPoolsContract(),
@@ -183,7 +184,7 @@ export default {
             amount: _values[i].toString(),
             value:
               parseFloat(_values[i].toString()) *
-              parseFloat(_values[i].toString()) *
+              cardInfo.val *
               this.diamondsPrice
           });
           this.totalValue += dataList[i].value;
