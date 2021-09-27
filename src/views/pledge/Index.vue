@@ -3,7 +3,7 @@
     <div class="box header">
       <div class="title text-center">当前奖金池总额</div>
       <div class="total mh-center">
-        <div class="num">{{poolremainUSDT}}</div>
+        <div class="num">{{poolremainUSDT | keepDecimals(2)}}</div>
         <div class="unit">USDT</div>
       </div>
       <div class="exchangeRate text-center">1钻石={{diamondsPrice}}USDT</div>
@@ -11,7 +11,7 @@
     <div class="box infoBox">
       <div class="infoCon mh-flex mh-vertical-center mh-align-between">
         <div class="item mh-flex mh-vertical-column mh-vertical-center">
-          <div class="num red">{{apy}}</div>
+          <div class="num red">{{apy | keepDecimals(2)}}%</div>
           <div class="label">年化收益率</div>
         </div>
         <div class="item mh-flex mh-vertical-column mh-vertical-center">
@@ -38,7 +38,7 @@
           <div class="mh-flex-1 text-center th">质押数量</div>
           <div class="mh-flex-1 text-center th">质押价值</div>
         </div>
-        <div class="item mh-center" v-for="(item, index) in dataList" :key="index">
+        <div class="item mh-center" v-for="(item, index) in dataList" :key="index" v-if="cardInfo.val == item.name">
           <div class="mh-flex-1 text-center td">
             <div>钻石卡</div>
             <div class="val">{{item.name}}钻石</div>
@@ -205,7 +205,9 @@ export default {
       let D = this.diamondsPrice;
       // 可分配的U * 一年要分出去U的比例 / 已经质押的资产价值
       console.log("X Y Z C D", X, Y, Z, C, D);
-      this.apy = ((X - Y) * ((Z * 10512000) / 100)) / (C * D);
+      if(C != 0){
+        this.apy = ((X - Y) * ((Z * 10512000) / 100)) / (C * D);
+      }
     },
     claim() {
       // 领取
@@ -283,14 +285,14 @@ export default {
       padding: 0 30px;
       .item {
         .num {
-          font-size: 36px;
+          font-size: 32px;
           font-family: Alibaba PuHuiTi;
           font-weight: bold;
           color: #5e2f2f;
         }
         .label {
           margin-top: 16px;
-          font-size: 28px;
+          font-size: 24px;
           font-family: PingFang SC;
           font-weight: bold;
           color: #56412e;
