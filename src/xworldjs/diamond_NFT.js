@@ -31,7 +31,7 @@ export class DiamondNFTContract {
 
   async balanceOf(account, tokenid) {
     // 获取用户钻石卡余额 （tokenid : 500,2000,5000）
-    return (await this.contract.balanceOf(account, tokenid)) / parseInt(getUsdtPointNumber())
+    return await this.contract.balanceOf(account, tokenid)
   }
 
   async safeTransferFrom(account, diamondnftpoolAddress, tokenid, amount) {
