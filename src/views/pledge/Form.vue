@@ -75,7 +75,7 @@ export default {
       this.diamondNFTContract
         .balanceOf(this.account, this.tokenid)
         .then(res => {
-          this.nftbalance = res;
+          this.nftbalance = res.toNumber();
           console.log("nftbalance", this.nftbalance);
         });
     },
