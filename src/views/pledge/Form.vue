@@ -94,7 +94,7 @@ export default {
           this.account,
           this.config.diamondcardpool,
           this.tokenid,
-          getUsdtPrice(this.amount)
+          this.amount
         )
         .then(data => {
           // success
