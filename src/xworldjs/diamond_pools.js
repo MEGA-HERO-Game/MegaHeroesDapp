@@ -16,7 +16,7 @@ export class DiamondPoolsContract {
   }
   async totalAmount() {
     // 质押钻石总量
-    return (await this.contract.totalAmount()) / parseInt(getUsdtPointNumber())
+    return await this.contract.totalAmount()
   }
 
   async pendingRewards(account) {
