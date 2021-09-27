@@ -46,13 +46,13 @@
           <div class="mh-flex-1 text-center td">{{item.amount}}</div>
           <div class="mh-flex-1 text-center td">{{item.value}}USDT</div>
         </div>
-        <div class="item mh-center bg_fff">
+        <!-- <div class="item mh-center bg_fff">
           <div class="mh-flex-1 text-center td">
             质押总价值
           </div>
           <div class="mh-flex-1 text-center td"></div>
           <div class="mh-flex-1 text-center td">{{totalValue}}USDT</div>
-        </div>
+        </div> -->
       </div>
     </div>
     <div class="foot_btn text-center" @click="goWithdraw">
