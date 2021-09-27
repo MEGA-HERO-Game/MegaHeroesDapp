@@ -138,6 +138,12 @@ export default {
     }
     .content {
       padding: 0 40px;
+      .name{
+        font-size: 28px;
+        font-family: PingFang SC;
+        font-weight: 500;
+        color: #56412E;
+      }
       .formCon {
         margin-top: 16px;
         position: relative;
