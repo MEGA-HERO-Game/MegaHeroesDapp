@@ -106,7 +106,7 @@ export default {
       }
       this.$refs["LoadingModal"].initData();
       this.diamondPoolsContract
-        .withdraw(this.tokenid, getUsdtPrice(this.amount))
+        .withdraw(this.tokenid, this.amount,this.accountInfo.userId)
         .then(data => {
           // success
           this.$refs["LoadingModal"].close();
