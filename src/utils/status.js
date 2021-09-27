@@ -1,5 +1,5 @@
 export const diamondsOption = [
-  { name: '钻石卡', val: 500 },
+  { name: '钻石卡', val: 500 , tokenid: 500},
   // { name: '钻石卡', val: 2000 },
   // { name: '大额钻石卡', val: 5000 },
 ]

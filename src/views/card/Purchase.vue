@@ -3,7 +3,7 @@
     <div class="box">
       <div class="header mh-flex mh-align-between">
         <div>钱包余额：{{myUSDT}}USDT</div>
-        <!-- <div>游戏内余额：2365钻石</div> -->
+        <div>游戏内余额：{{nftbalance}}钻石</div>
       </div>
       <div class="section mh-flex mh-center">
         <div class="usdt mh-center">
@@ -14,7 +14,7 @@
         <div class="usdt mh-center text-center">
           <img src="@/assets/common/card.png" alt="">
           {{cardInfo.name}}<br>
-          （{{cardInfo.val}}）
+          （{{cardInfo.val}}钻）
           <!-- <img class="bottom_icon" src="@/assets/common/bottom_icon.png" alt=""> -->
         </div>
       </div>
@@ -87,7 +87,9 @@ export default {
       diamondNFTContract: new DiamondNFTContract(),
       usdtContract: new UsdtContract(),
       config: getConfig(),
-      myUSDT: 0
+      myUSDT: 0,
+
+      nftbalance: 0 //获取用户钻石卡余额
     };
   },
   watch: {
@@ -105,10 +107,17 @@ export default {
                 this.myUSDT = res;
               });
             });
-          this.diamondNFTContract.init(
-            this.web3.currentProvider,
-            this.config.diamondcard
-          );
+          this.diamondNFTContract
+            .init(this.web3.currentProvider, this.config.diamondcard)
+            .then(() => {
+              // 获取用户钻石卡余额
+              this.diamondNFTContract
+                .balanceOf(this.account, this.cardInfo.tokenid)
+                .then(res => {
+                  this.nftbalance = res.toNumber();
+                  console.log("nftbalance", this.nftbalance);
+                });
+            });
         }
       },
       deep: true,
