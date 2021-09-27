@@ -184,7 +184,7 @@ export default {
             amount: _values[i].toString(),
             value:
               parseFloat(_values[i].toString()) *
-              cardInfo.val *
+              this.cardInfo.val *
               this.diamondsPrice
           });
           this.totalValue += dataList[i].value;
