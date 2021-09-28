@@ -1,0 +1,75 @@
+/* 
+ * @mh 基础组件  共用样式
+ * @Created by hexiangshuai
+*/
+.mh-flex {
+	display: -webkit-flex;
+	display: flex;
+}
+
+.mh-flex-1 {
+	flex: 1;
+}
+
+.mh-align-center {
+	justify-content: center;
+}
+
+.mh-align-left {
+	justify-content: flex-start !important;
+}
+
+.mh-align-right {
+	justify-content: flex-end !important;
+}
+
+.mh-align-between {
+	justify-content: space-between !important;
+}
+
+.mh-align-around {
+	justify-content: space-around !important;
+}
+
+.mh-vertical-center {
+	align-items: center;
+}
+
+.mh-vertical-top {
+	align-items: flex-start;
+}
+
+.mh-vertical-bottom {
+	align-items: flex-end;
+}
+
+.mh-center {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.mh-line-feed {
+	flex-direction: row;
+	flex-wrap: wrap;
+}
+
+.mh-vertical-column {
+	flex-direction: column;
+}
+
+.mh-ellipsis-1 {
+	display: -webkit-box;
+	overflow: hidden;
+	white-space: normal !important;
+	text-overflow: ellipsis;
+	word-wrap: break-word;
+	-webkit-line-clamp: 1;
+	-webkit-box-orient: vertical;
+}
+
+.mh-input-null{
+	font-size: 24rpx !important;
+	font-family: Source Han Sans CN;
+	color: rgba(134, 148, 184, 0.5) !important;
+}
