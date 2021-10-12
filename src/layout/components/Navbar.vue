@@ -94,8 +94,9 @@ export default {
       });
     },
     editFun() {
-      window.location.href =
-        "http://megahero.games:25001/rebind.html?addr=" + this.account;
+      // window.location.href =
+      //   "http://megahero.games:25001/rebind.html?addr=" + this.account;
+      window.location.href = 'rebind.html';
     },
     goHome() {
       if (this.getRouteName == "Home") {
@@ -112,7 +113,7 @@ export default {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 1;
+  z-index: 10;
   width: 100%;
   height: 150px;
   // background-color: #c5ac84;

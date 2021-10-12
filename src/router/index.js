@@ -115,6 +115,39 @@ const routes = [
       },
     ]
   },
+  {
+    path: '/diamonds',
+    component: Layout,
+    name: 'Diamonds',
+    redirect: '/diamonds/deposit',
+    children: [
+      {
+        path: 'deposit',
+        component: () => import('@/views/diamonds/Deposit.vue'),
+        name: 'diamondsDeposit',
+        meta: { title: '', icon: '', affix: true }
+      }, {
+        path: 'extract',
+        component: () => import('@/views/diamonds/Extract.vue'),
+        name: 'diamondsExtract',
+        meta: { title: '', icon: '', affix: true }
+      }
+    ]
+  },
+  {
+    path: '/knapsack',
+    component: Layout,
+    name: 'Knapsack',
+    redirect: '/knapsack/index',
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/knapsack/Index.vue'),
+        name: 'KnapsackIndex',
+        meta: { title: '', icon: '', affix: true }
+      }
+    ]
+  },
   { path: '*', redirect: '/', hidden: true, meta: {} }
 ]
 

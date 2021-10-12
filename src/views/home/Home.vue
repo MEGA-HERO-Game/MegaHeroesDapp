@@ -13,7 +13,10 @@
         钻石价格：{{diamondsPrice}}USDT
         <span>（限时五折优惠）</span>
       </div>
-      <div class="purchase-btn mh-center" @click="jumpPage(2)">立即购买</div>
+      <div class="mh-center">
+        <div class="purchase-btn mh-center mr-18" @click="jumpPage(2)">立即购买</div>
+        <div class="purchase-btn mh-center" @click="jumpPage(5)">提取钻石</div>
+      </div>
     </div>
 
     <div class="box optionBox">
@@ -21,8 +24,10 @@
         <div class="label">{{item.name}}</div>
         <div class="val">（价值{{item.val}}钻石）</div>
       </div>
-      <!-- <div @click="jumpPage(3)" class="purchase-btn mh-center purchase-btns">立即购买</div> -->
-      <div class="notyetopen-btn mh-center disabled">暂未开启</div>
+      <div class="mh-center">
+        <div @click="jumpPage(3)" class="purchase-btn mh-center purchase-btns mr-18">立即购买</div>
+        <div @click="jumpPage(6)" class="purchase-btn mh-center purchase-btns">存入钻石卡</div>
+      </div>
     </div>
     <!-- <div class="box">
       <img class="logo" src="@/assets/home/logo.png" alt="">
@@ -40,8 +45,7 @@
       <div class="content">
         Mega Hero将部分的平台收益奖励给质押的用户，质押资产为钻石卡，收益按照区块进行分配，个人的收益按照个人资产价值跟质押总资产价值占比进行分配。
       </div>
-      <!-- <div @click="jumpPage(4)" class="notyetopen-btn mh-center">进入</div> -->
-      <div class="notyetopen-btn mh-center disabled">暂未开启</div>
+      <div @click="jumpPage(4)" class="notyetopen-btn mh-center">进入</div>
     </div>
 
     <div class="banner">
@@ -53,7 +57,7 @@
         游戏内与钱包资产的互转，存入是指将用户钱包资产存入到游戏内，提取是指将游戏资产提取到钱包中。<br>
         目前允许存入资产包括5星、6星神灵、精灵蛋、精灵、钻石卡。允许提取的资产包括5星、6星神灵、精灵、钻石。
       </div>
-      <div class="notyetopen-btn disabled mh-center">暂未开启</div>
+      <div @click="jumpPage(7)" class="notyetopen-btn mh-center">进入</div>
     </div>
 
     <!-- <div class="home-title mh-center">兑换</div>
@@ -130,6 +134,12 @@ export default {
         this.$router.push({ path: "/card" });
       } else if (val == 4) {
         this.$router.push({ path: "/pledge" });
+      } else if (val == 5) {
+        this.$router.push({ path: "/diamonds" });
+      } else if (val == 6) {
+        this.$router.push({ path: "/diamonds/extract" });
+      } else if (val == 7) {
+        this.$router.push({ path: "/knapsack" });
       }
     }
   }
@@ -188,20 +198,22 @@ export default {
     }
   }
   .purchase-btn {
-    width: 500px;
-    height: 62px;
+    width: 300px;
+    height: 80px;
     background-color: #b9965f;
     border-radius: 12px;
     font-size: 36px;
     font-family: PingFang SC;
     font-weight: 600;
     color: #ffffff;
-    margin: 0 auto;
     margin-bottom: 6px;
   }
   .purchase-btns {
     margin-top: 38px;
     margin-bottom: 0;
+  }
+  .mr-18{
+    margin-right: 18px;
   }
   .banner {
     margin-bottom: 26px;

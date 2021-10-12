@@ -32,3 +32,14 @@ export function drawInterfaceApi(data) {
         data: data
     })
 }
+
+/**
+ *  获取背包资产
+ */
+ export function assetInterfaceApi(data) {
+    return request({
+        url: '/mh_official/asset/interface',
+        method: 'post',
+        data: data
+    })
+}
