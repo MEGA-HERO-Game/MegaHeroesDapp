@@ -10,7 +10,7 @@ export class MPNFTContract {
 
 
   async getNFTs(user) {
-    const t = await this.contract.getUserAssetIds(user)
+    const t = await this.contract.getUserNftList(user)
 
     console.log('nfts:::::', t)
     const tmp = [];
