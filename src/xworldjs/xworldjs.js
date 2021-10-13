@@ -4,6 +4,7 @@ import { MPNFTContract } from "@/xworldjs/mp_nft";
 import { MPShopContract } from "@/xworldjs/mp_shop";
 import { OperatorProxyContract } from "@/xworldjs/operator_proxy";
 import { UsdtContract } from "@/xworldjs/usdt";
+import { IboxTokenContract } from "@/xworldjs/ibox_token";
 import { getConfig } from "@/config";
 
 class XWorldJs {
@@ -13,16 +14,18 @@ class XWorldJs {
   mpShopContract = new MPShopContract();
   operatorProxyContract = new OperatorProxyContract();
   usdtContract = new UsdtContract();
+  iboxTokenContract = new IboxTokenContract();
 
   async initContract(web3Provider) {
     const config = getConfig();
     console.log('config::::', config)
-    this.diamondNFTContract.init(web3Provider, config.diamondcard);
-    this.diamondPoolsContract.init(web3Provider, config.diamondcardpool);
-    this.mpNFTContract.init(web3Provider, config.nft);
-    this.mpShopContract.init(web3Provider, config.shop);
-    this.operatorProxyContract.init(web3Provider, config.operator);
-    this.usdtContract.init(web3Provider, config.usdt);
+    await this.diamondNFTContract.init(web3Provider, config.diamondcard);
+    await this.diamondPoolsContract.init(web3Provider, config.diamondcardpool);
+    await this.mpNFTContract.init(web3Provider, config.nft);
+    await this.mpShopContract.init(web3Provider, config.shop);
+    await this.operatorProxyContract.init(web3Provider, config.operator);
+    await this.usdtContract.init(web3Provider, config.usdt);
+    await this.iboxTokenContract.init(web3Provider, config.ibox);
   }
 }
 

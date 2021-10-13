@@ -60,7 +60,7 @@ const actions = {
         networkId = 56;
       }
       commit('SET_NETWORKID', networkId)
-      getXWorldService().initContract(web3.currentProvider);
+      await getXWorldService().initContract(web3.currentProvider);
       dispatch('user/setAccount', address, { root: true })
       resolve();
     })
