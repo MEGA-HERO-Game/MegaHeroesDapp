@@ -110,6 +110,11 @@ export default {
       this.$refs["Rule"].init();
     },
     depositFun() {
+      if (this.nftbalance < this.amount) {
+        console.error("余额不足");
+        that.$refs["TipModal"].initData("余额不足");
+        return;
+      }
       this.$refs["LoadingModal"].initData();
       getXWorldService()
         .diamondNFTContract.burn(
