@@ -11,7 +11,7 @@ export class DiamondNFTContract {
   }
 
     // ibox兑换英雄及钻石卡资产
-    //iboxId  钻石卡tokenid
+    //iboxId  ibox资产tokenid
     //mpIds 英雄类nft资产tokenid数组
     //diaIds 钻石卡tokenid数组
     //diaAmounts 每种钻石卡数量数组
