@@ -41,7 +41,7 @@ export class MPNFTContract {
       let txHash = "";
       this.contract.safeTransferFrom(from, to, tokenid, amount, "0x", {
         from:
-          account
+          from
       }).on('transactionHash', function (hash) {
         txHash = hash;
       }).on('receipt', function (receipt) {
