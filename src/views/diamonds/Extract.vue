@@ -89,7 +89,7 @@ export default {
           this.accountInfo.token
         ) {
           getXWorldService().diamondNFTContract
-                .balanceOf(this.account, this.cardInfo.tokenid)
+                .balanceOf(this.account, this.tokenid)
                 .then(res => {
                   this.nftbalance = res.toNumber();
                   console.log("nftbalance", this.nftbalance);
