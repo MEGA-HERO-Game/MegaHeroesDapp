@@ -1,5 +1,6 @@
 import { createWeb3Modal } from '@/web3/createWeb3Modal';
 import Web3 from "web3";
+import { getXWorldService } from "@/xworldjs/xworldjs";
 
 const state = {
   web3: null,
@@ -20,7 +21,7 @@ const mutations = {
 }
 
 const actions = {
-  connectWallet({ commit, dispatch}) {
+  connectWallet({ commit, dispatch }) {
     return new Promise(async (resolve, reject) => {
       const web3Modal = createWeb3Modal();
       const provider = await web3Modal.connect();
@@ -32,16 +33,16 @@ const actions = {
           return;
         }
         provider.on('close', () => {
-          dispatch('disconnectWallet', {web3, web3Modal})
+          dispatch('disconnectWallet', { web3, web3Modal })
         });
         provider.on('disconnect', async () => {
-          dispatch('disconnectWallet', {web3, web3Modal})
+          dispatch('disconnectWallet', { web3, web3Modal })
         });
         provider.on('accountsChanged', async accounts => {
           if (accounts[0]) {
             dispatch('user/setAccount', accounts[0], { root: true })
           } else {
-            dispatch('disconnectWallet', {web3, web3Modal})
+            dispatch('disconnectWallet', { web3, web3Modal })
           }
         });
         provider.on('chainChanged', async chainId => {
@@ -59,12 +60,13 @@ const actions = {
         networkId = 56;
       }
       commit('SET_NETWORKID', networkId)
+      getXWorldService().initContract(web3.currentProvider);
       dispatch('user/setAccount', address, { root: true })
       resolve();
     })
   },
-  disconnectWallet({ commit, dispatch }, info){
-    const {web3, web3Modal} = info;
+  disconnectWallet({ commit, dispatch }, info) {
+    const { web3, web3Modal } = info;
     return new Promise(async (resolve, reject) => {
       try {
         if (web3 && web3.currentProvider && web3.currentProvider.close) {

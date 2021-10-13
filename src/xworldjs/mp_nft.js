@@ -3,7 +3,7 @@ import MP_NFT_ABI from '@/contracts//MPNFT.json';
 
 export class MPNFTContract {
   async init(provider, tokenAddress) {
-    const ccc = contract(MP_NFT_ABI);
+    const ccc = contract({ "abi": MP_NFT_ABI });
     ccc.setProvider(provider);
     this.contract = await ccc.at(tokenAddress);
   }

@@ -48,7 +48,7 @@
       </div>
     </div>
     <div class="tip">手续费：<span>0（限时优惠）</span></div>
-    <div class="foot_btn text-center">立即存入</div>
+    <div class="foot_btn text-center" @click="depositFun">立即存入</div>
     <div class="note">请注意：必须使用注册的账号和密码登录游戏客户端，并且创建角色，存入钻石卡，
       <span @click="handleRule">请查看规则</span>
     </div>
@@ -65,6 +65,7 @@ import Rule from "@/components/Rule";
 import { mapGetters } from "vuex";
 import { diamondsOption, diamondsPrice, receivedOption } from "@/utils/status";
 import { getConfig, getUsdtPrice } from "@/config";
+import { getXWorldService } from "@/xworldjs/xworldjs";
 export default {
   name: "diamondsExtract",
   components: { LoadingModal, TipModal, Rule },
@@ -74,6 +75,7 @@ export default {
   data() {
     return {
       show: false,
+      tokenid: 500, //写死 id
       amount: 40
     };
   },
@@ -86,6 +88,27 @@ export default {
     handleRule() {
       this.$refs["Rule"].init();
     },
+    depositFun() {
+      this.$refs["LoadingModal"].initData();
+      getXWorldService()
+        .mpNFTContract.safeTransferFrom(
+          this.account,
+          "0x0000000000000000000000000000000000000000",
+          this.tokenid,
+          this.amount
+        )
+        .then(data => {
+          // success
+          this.$refs["LoadingModal"].close();
+          this.$refs["TipModal"].initData("存入成功");
+        })
+        .catch(error => {
+          console.log(error);
+          // Failure
+          this.$refs["LoadingModal"].close();
+          this.$refs["TipModal"].initData("交易失败");
+        });
+    }
   }
 };
 </script>
