@@ -91,9 +91,8 @@ export default {
     depositFun() {
       this.$refs["LoadingModal"].initData();
       getXWorldService()
-        .diamondNFTContract.safeTransferFrom(
+        .diamondNFTContract.burn(
           this.account,
-          "0x0000000000000000000000000000000000000000",
           this.tokenid,
           this.amount
         )
