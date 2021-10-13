@@ -35,10 +35,28 @@ export class DiamondNFTContract {
   }
 
   async safeTransferFrom(account, diamondnftpoolAddress, tokenid, amount) {
-    // 质押钻石卡
+    // 转账
     return new Promise((resolve, reject) => {
       let txHash = "";
       this.contract.safeTransferFrom(account, diamondnftpoolAddress, tokenid, amount, "0x", {
+        from:
+          account
+      }).on('transactionHash', function (hash) {
+        txHash = hash;
+      }).on('receipt', function (receipt) {
+        resolve(txHash)
+      }).on('error', function (error) {
+        reject(error);
+      }).catch(error => {
+        reject(error);
+      });
+    });
+  }
+  async burn(account, tokenid, amount) {
+    // 销毁
+    return new Promise((resolve, reject) => {
+      let txHash = "";
+      this.contract.burn(tokenid, amount, {
         from:
           account
       }).on('transactionHash', function (hash) {
