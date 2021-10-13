@@ -12,8 +12,6 @@
         "usdt": "0x04F535663110A392A6504839BEeD34E019FdB4E0",
         "operator": "0x88af18201A650e785D8657BFC5FE99b54E75852D",
         "ethHost": "wss://ws-testnet.hecochain.com",
-        "usdt_receiver": "0xcbdf73b671160836a7Fa9A0319Cc2B87b01F9752",
-        "nft_receiver": "0xcbdf73b671160836a7Fa9A0319Cc2B87b01F9752",
         "diamondcard": "0x213497Ab12FD71Ba7A3cd071220564C80D718f14",
         "diamondcardpool": "0x02688b80A0D6f92B515d485B9E346a4BA05cAA1a",
         "chainId": 256
@@ -25,8 +23,6 @@
         "usdt": "0xa71edc38d189767582c38a3145b5873052c3e47a",
         "operator": "",
         "ethHost": "wss://ws-mainnet-node.huobichain.com",
-        "usdt_receiver": "0x8f04C40F742EA8Dd875537B54E5A1A6f556bAEDF",
-        "nft_receiver": "0xac3b316bb782cb4587A7FD2522e0161E702BA579",
         "diamondcard": "",
         "diamondcardpool": "",
         "chainId": 128
