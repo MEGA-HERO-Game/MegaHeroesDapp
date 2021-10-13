@@ -42,7 +42,7 @@
           </div>
           <div class="subname text-right mh-flex mh-align-between">
             <div>价值500钻石</div>
-            <div>钱包余额：10</div>
+            <div>钱包余额：{{nftbalance}}</div>
           </div>
         </div>
       </div>
@@ -60,6 +60,7 @@ import TipModal from "@/components/TipModal";
 import { mapGetters } from "vuex";
 import { diamondsOption, diamondsPrice, receivedOption } from "@/utils/status";
 import { getConfig, getUsdtPrice } from "@/config";
+import { getXWorldService } from "@/xworldjs/xworldjs";
 export default {
   name: "diamondsDeposit",
   components: { LoadingModal, TipModal },
@@ -69,8 +70,30 @@ export default {
   data() {
     return {
       show: false,
-      amount: 20000
+      tokenid: 500, //写死 id
+      amount: 20000,
+      nftbalance: 0 //获取用户钻石卡余额
     };
+  },
+  watch: {
+    accountInfo: {
+      handler: function(val, oldVal) {
+        if (
+          this.accountInfo &&
+          this.accountInfo.userId &&
+          this.accountInfo.token
+        ) {
+          getXWorldService().diamondNFTContract
+                .balanceOf(this.account, this.tokenid)
+                .then(res => {
+                  this.nftbalance = res.toNumber();
+                  console.log("nftbalance", this.nftbalance);
+           });
+        }
+      },
+      deep: true,
+      immediate: true
+    }
   },
   created() {},
   mounted() {},
