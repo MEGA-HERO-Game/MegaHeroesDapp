@@ -22,7 +22,7 @@
           </div>
           <div class="subname text-right mh-flex mh-align-between">
             <div>价值500钻石</div>
-            <div>钱包余额：10</div>
+            <div>钱包余额：{{nftbalance}}</div>
           </div>
         </div>
       </div>
@@ -76,8 +76,34 @@ export default {
     return {
       show: false,
       tokenid: 500, //写死 id
-      amount: 40
+      amount: 40,
+      nftbalance: 0 //获取用户钻石卡余额
     };
+  },
+  watch: {
+    accountInfo: {
+      handler: function(val, oldVal) {
+        if (
+          this.accountInfo &&
+          this.accountInfo.userId &&
+          this.accountInfo.token
+        ) {
+          getXWorldService().diamondNFTContract
+            .init(this.web3.currentProvider, this.config.diamondcard)
+            .then(() => {
+              // 获取用户钻石卡余额
+              this.diamondNFTContract
+                .balanceOf(this.account, this.cardInfo.tokenid)
+                .then(res => {
+                  this.nftbalance = res.toNumber();
+                  console.log("nftbalance", this.nftbalance);
+                });
+            });
+        }
+      },
+      deep: true,
+      immediate: true
+    }
   },
   created() {},
   mounted() {},
