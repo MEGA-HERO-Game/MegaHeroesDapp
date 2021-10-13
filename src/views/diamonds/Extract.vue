@@ -89,16 +89,11 @@ export default {
           this.accountInfo.token
         ) {
           getXWorldService().diamondNFTContract
-            .init(this.web3.currentProvider, this.config.diamondcard)
-            .then(() => {
-              // 获取用户钻石卡余额
-              this.diamondNFTContract
                 .balanceOf(this.account, this.cardInfo.tokenid)
                 .then(res => {
                   this.nftbalance = res.toNumber();
                   console.log("nftbalance", this.nftbalance);
-                });
-            });
+           });
         }
       },
       deep: true,
