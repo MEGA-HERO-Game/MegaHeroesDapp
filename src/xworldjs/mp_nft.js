@@ -35,11 +35,11 @@ export class MPNFTContract {
     return result;
     // console.log('result::::', result)
   }
-  async safeTransferFrom(from, to, tokenid, amount) {
+  async safeTransferFrom(from, to, tokenid) {
     // 转账nft
     return new Promise((resolve, reject) => {
       let txHash = "";
-      this.contract.safeTransferFrom(from, to, tokenid, amount, "0x", {
+      this.contract.safeTransferFrom(from, to, tokenid, "0x", {
         from:
           from
       }).on('transactionHash', function (hash) {
