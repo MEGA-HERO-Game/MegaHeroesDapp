@@ -60,6 +60,17 @@
       <div @click="jumpPage(7)" class="notyetopen-btn mh-center">进入</div>
     </div>
 
+    <div class="banner">
+      <img src="@/assets/home/banner2.png" alt="">
+    </div>
+    <div class="box">
+      <div class="name text-center">iBox资产兑换</div>
+      <div class="content">
+        在iBox交易平台购买的N级、SR级或者SSR级NFT资产，如果想要将资产存入到游戏中使用或者在iBox交易市场直接出售都需要使用iBox资产兑换功能进行兑换。
+      </div>
+      <div @click="jumpPage(8)" class="notyetopen-btn mh-center">进入</div>
+    </div>
+
     <!-- <div class="home-title mh-center">兑换</div>
     <div class="banner">
       <img src="@/assets/home/banner2.png" alt="">
@@ -140,6 +151,8 @@ export default {
         this.$router.push({ path: "/diamonds/extract" });
       } else if (val == 7) {
         this.$router.push({ path: "/knapsack" });
+      } else if (val == 8) {
+        this.$router.push({ path: "/iBox" });
       }
     }
   }

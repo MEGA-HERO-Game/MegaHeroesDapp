@@ -148,6 +148,20 @@ const routes = [
       }
     ]
   },
+  {
+    path: '/iBox',
+    component: Layout,
+    name: 'IBox',
+    redirect: '/iBox/index',
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/iBox/Index.vue'),
+        name: 'IBoxIndex',
+        meta: { title: '', icon: '', affix: true }
+      }
+    ]
+  },
   { path: '*', redirect: '/', hidden: true, meta: {} }
 ]
 

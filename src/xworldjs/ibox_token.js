@@ -24,14 +24,12 @@ export class IboxTokenContract {
   }
 
   async getIboxTokenId(user) {
-    const balance = await this.contract.balanceOf(user);
-    if (balance == 0) {
-
-    }
+    let balance = await this.contract.balanceOf(user);
+    balance = parseFloat(balance.toString());
     const result = [];
     for (let i = 0; i < balance; i++) {
-      const token = await this.contract.tokenOfOwnerByIndex(user, i.id);
-      result[i] = token;
+      const token = await this.contract.tokenOfOwnerByIndex(user, i);
+      result[i] = token.toString();
     }
     return result;
   }
