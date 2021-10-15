@@ -159,6 +159,12 @@ const routes = [
         component: () => import('@/views/iBox/Index.vue'),
         name: 'IBoxIndex',
         meta: { title: '', icon: '', affix: true }
+      },
+      {
+        path: 'exchange',
+        component: () => import('@/views/iBox/Exchange.vue'),
+        name: 'IBoxExchange',
+        meta: { title: '', icon: '', affix: true }
       }
     ]
   },

@@ -4,7 +4,7 @@
       iBox资产
     </div>
     <div class="box mh-flex mh-line-feed">
-      <div class="item" v-for="(item, index) in list" :key="index">
+      <div class="item" v-for="(item, index) in list" :key="index" @click="goExchange(item.tokenId)">
         <img :src="item.pic" alt="">
       </div>
     </div>
@@ -82,6 +82,14 @@ export default {
         .catch(error => {
           this.toast.clear();
         });
+    },
+    goExchange(id) {
+      this.$router.push({
+        path: "/iBox/exchange",
+        query: {
+          id: id
+        }
+      });
     }
   }
 };
