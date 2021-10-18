@@ -2,21 +2,21 @@
   <div class="knapsack-page">
     <div class="box">
       <div class="navCon mh-flex mh-align-center mh-vertical-bottom">
-        <div class="nav active mar-r24">游戏资产</div>
-        <div class="nav">钱包资产</div>
+        <div class="nav mar-r24" :class="{active: type == 1}" @click="toggleAsset(1)">游戏资产</div>
+        <div class="nav" :class="{active: type == 2}" @click="toggleAsset(2)">钱包资产</div>
       </div>
       <div class="content">
-        <div class="toogleList mh-center">
-          <div class="toogleItem leftItem mh-center active">Mega Hero资产</div>
-          <div class="toogleItem rightItem mh-center">IBOX资产</div>
+        <div class="toogleList mh-center" v-if="type == 2">
+          <div class="toogleItem leftItem mh-center" :class="{active: isIBox == 2}" @click="toggleIBox(2)">Mega Hero资产</div>
+          <div class="toogleItem rightItem mh-center" :class="{active: isIBox == 1}" @click="toggleIBox(1)">IBOX资产</div>
         </div>
         <div class="navList mh-center">
-          <div class="navItem mh-center active">神灵</div>
-          <div class="navItem mh-center">道具</div>
-          <div class="navItem mh-center">精灵</div>
+          <div class="navItem mh-center" :class="{active:assetType == 2}" @click="toggleAssetType(2)">神灵</div>
+          <div class="navItem mh-center" :class="{active:assetType == 0}" @click="toggleAssetType(0)">道具</div>
+          <div class="navItem mh-center" :class="{active:assetType == 3}" @click="toggleAssetType(3)">精灵</div>
         </div>
         <div class="list mh-flex mh-line-feed">
-          <div class="item" v-for="item in list" :key="item" @click="handleDetail">
+          <div class="item" v-for="(item, index) in list" :key="index" @click="handleDetail">
             <img src="@/assets/knapsack/img_1.png" alt="">
           </div>
         </div>
@@ -42,6 +42,7 @@ import { mapGetters } from "vuex";
 import { diamondsOption, diamondsPrice, receivedOption } from "@/utils/status";
 import { getConfig, getUsdtPrice } from "@/config";
 import { assetInterfaceApi } from "@/api/user";
+import { imgBaseUrl } from '@/utils/env'
 export default {
   name: "KnapsackIndex",
   components: { LoadingModal, TipModal, Dialog },
@@ -50,8 +51,11 @@ export default {
   },
   data() {
     return {
-      list: 18,
-      assetType: 2 //资产类型，2.神灵，3.精灵
+      imgBaseUrl,
+      list: [],
+      type: 1, //1  游戏资产  2 钱包资产
+      isIBox: 2, // 1 IBOX资产  2Mega Hero资产
+      assetType: 2 //资产类型，2.神灵，3.精灵  0.道具
     };
   },
   watch: {
@@ -82,11 +86,26 @@ export default {
       })
         .then(response => {
           if (response.code == 1) {
+            this.list = response.list;
           } else {
-            Toast(response.errorMessage);
+            this.$toast(response.errorMessage);
           }
         })
         .catch(error => {});
+    },
+    toggleAsset(val) {
+      this.type = val;
+      if (this.type == 1) {
+        this.getData();
+      } else {
+      }
+    },
+    toggleIBox(val) {
+      this.isIBox = val;
+    },
+    toggleAssetType(val) {
+      this.assetType = val;
+      this.getData();
     },
     handleDetail() {
       this.$refs["Dialog"].init();

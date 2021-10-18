@@ -8,7 +8,7 @@
       <div class="info mh-flex-1">
         <div class="mh-flex mh-vertical-center mh-align-between">
           <div class="name fontColor">{{iboxInfo.name}}</div>
-          <div class="choose fontColor mh-center">
+          <div class="choose fontColor mh-center" @click="chooseList">
             选择资产
             <img class="bottom_allow" src="@/assets/common/bottom_allow.png" alt="">
           </div>
@@ -64,6 +64,8 @@
     </div>
     <div class="footBtn text-center">立即兑换</div>
     <div class="tip text-center">手续费：<span>0（限时优惠）</span></div>
+    <!--  -->
+    <SelectAsset ref="SelectAsset" />
   </div>
 </template>
 
@@ -71,9 +73,10 @@
 import { mapGetters } from "vuex";
 import { getXWorldService } from "@/xworldjs/xworldjs";
 import { metadataApi } from "@/api/user";
+import SelectAsset from "@/components/SelectAsset";
 export default {
   name: "IBoxExchange",
-  components: {},
+  components: { SelectAsset },
   computed: {},
   data() {
     return {
@@ -102,9 +105,10 @@ export default {
             this.$toast(response.message);
           }
         })
-        .catch(error => {
-          this.toast.clear();
-        });
+        .catch(error => {});
+    },
+    chooseList() {
+      this.$refs["SelectAsset"].initData();
     }
   }
 };

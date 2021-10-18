@@ -145,6 +145,18 @@ const routes = [
         component: () => import('@/views/knapsack/Index.vue'),
         name: 'KnapsackIndex',
         meta: { title: '', icon: '', affix: true }
+      },
+      {
+        path: 'deposit',
+        component: () => import('@/views/knapsack/Deposit.vue'),
+        name: 'KnapsackDeposit',
+        meta: { title: '', icon: '', affix: true }
+      },
+      {
+        path: 'extract',
+        component: () => import('@/views/knapsack/Extract.vue'),
+        name: 'KnapsackExtract',
+        meta: { title: '', icon: '', affix: true }
       }
     ]
   },
