@@ -83,19 +83,38 @@
 
 <script>
 import { mapGetters } from "vuex";
-
+import { assetInterfaceApi } from "@/api/user";
 export default {
   name: "Dialog",
   props: {},
-  computed: {},
+  computed: {
+    ...mapGetters(["accountInfo", "account", "web3"])
+  },
   data() {
     return {
       show: false
     };
   },
   methods: {
-    init() {
+    init(info) {
       this.show = true;
+      this.getDetail(info.id);
+    },
+    getDetail(id) {
+      assetInterfaceApi({
+        cmd: "GET_HERO_DETAIL",
+        requestUserId: this.accountInfo.userId,
+        token: this.accountInfo.token,
+        requestTime: new Date().valueOf(),
+        id: id
+      })
+        .then(response => {
+          if (response.code == 1) {
+          } else {
+            this.$toast(response.errorMessage);
+          }
+        })
+        .catch(error => {});
     }
   }
 };
@@ -187,20 +206,20 @@ export default {
       left: -12px;
       margin-bottom: 46px;
     }
-    .chartCon{
+    .chartCon {
       margin-bottom: 34px;
-      .chartItem{
+      .chartItem {
         margin-bottom: 10px;
-        .chartImg{
+        .chartImg {
           width: 60px;
           height: 62px;
         }
-        .progressCon{
-          .progress{
+        .progressCon {
+          .progress {
             width: 270px;
             height: 12px;
             background-color: #724600;
-            border: 2px solid #F5A031;
+            border: 2px solid #f5a031;
             border-radius: 12px;
           }
         }
@@ -245,17 +264,17 @@ export default {
       font-weight: bold;
       color: #5e3a11;
     }
-    .footerCon{
+    .footerCon {
       font-size: 24px;
       font-family: Microsoft YaHei;
       font-weight: 400;
-      color: #BFA993;
+      color: #bfa993;
       opacity: 0.6;
       padding: 102px 0 44px 0;
-      .footerItem{
+      .footerItem {
         margin-bottom: 8px;
       }
-      .name{
+      .name {
         margin-right: 100px;
       }
     }

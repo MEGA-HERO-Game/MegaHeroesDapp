@@ -15,13 +15,23 @@
           <div class="navItem mh-center" :class="{active:assetType == 0}" @click="toggleAssetType(0)">道具</div>
           <div class="navItem mh-center" :class="{active:assetType == 3}" @click="toggleAssetType(3)">精灵</div>
         </div>
-        <div class="list mh-flex mh-line-feed">
-          <div class="item" v-for="(item, index) in list" :key="index" @click="handleDetail">
-            <img src="@/assets/knapsack/img_1.png" alt="">
+        <div class="list mh-flex mh-line-feed" v-if="assetType == 2">
+          <div class="item" v-for="(item, index) in godsList" :key="index" @click="handleDetail(item)">
+            <img :src="formatHeroImg(item.icon)" alt="">
           </div>
+          <div v-if="loadComplete && (!godsList || !godsList.length)" class="noData mh-flex-1">暂无数据</div>
+        </div>
+        <div class="list mh-flex mh-line-feed" v-if="assetType == 0">
+          <div class="noData mh-flex-1">暂无数据</div>
+        </div>
+        <div class="list mh-flex mh-line-feed" v-if="assetType == 3">
+          <div class="item" v-for="(item, index) in spiritList" :key="index" @click="handleDetail(item)">
+            <img :src="formatHeroImg(item.icon)" alt="">
+          </div>
+          <div v-if="loadComplete && (!spiritList || !spiritList.length)" class="noData mh-flex-1">暂无数据</div>
         </div>
         <div class="mh-flex mh-align-between mh-vertical-center footCon">
-          <div class="home-title mh-center">刷新</div>
+          <div class="home-title mh-center" @click="refresh">刷新</div>
           <div class="text">游戏内钻石：45896</div>
         </div>
       </div>
@@ -42,20 +52,23 @@ import { mapGetters } from "vuex";
 import { diamondsOption, diamondsPrice, receivedOption } from "@/utils/status";
 import { getConfig, getUsdtPrice } from "@/config";
 import { assetInterfaceApi } from "@/api/user";
-import { imgBaseUrl } from '@/utils/env'
+import imgPath from "@/views/mixins/imgPath";
 export default {
   name: "KnapsackIndex",
   components: { LoadingModal, TipModal, Dialog },
+  mixins: [imgPath],
   computed: {
     ...mapGetters(["accountInfo", "account", "web3"])
   },
   data() {
     return {
-      imgBaseUrl,
-      list: [],
+      godsList: [], //神灵列表
+      spiritList: [], //精灵列表
+      propList: [], //道具列表
       type: 1, //1  游戏资产  2 钱包资产
       isIBox: 2, // 1 IBOX资产  2Mega Hero资产
-      assetType: 2 //资产类型，2.神灵，3.精灵  0.道具
+      assetType: 2, //资产类型，2.神灵，3.精灵  0.道具
+      loadComplete: false
     };
   },
   watch: {
@@ -77,6 +90,7 @@ export default {
   mounted() {},
   methods: {
     getData() {
+      this.loadComplete = false;
       assetInterfaceApi({
         cmd: "GET_GAME_ASSET",
         requestUserId: this.accountInfo.userId,
@@ -85,17 +99,24 @@ export default {
         assetType: this.assetType
       })
         .then(response => {
+          this.loadComplete = true;
           if (response.code == 1) {
-            this.list = response.list;
+            if ((this.assetType = 2)) {
+              this.godsList = response.list;
+            } else if ((this.assetType = 3)) {
+              this.spiritList = response.list;
+            }
           } else {
             this.$toast(response.errorMessage);
           }
         })
-        .catch(error => {});
+        .catch(error => {
+          this.loadComplete = true;
+        });
     },
     toggleAsset(val) {
       this.type = val;
-      if (this.type == 1) {
+      if (this.type == 1 && this.assetType != 0) {
         this.getData();
       } else {
       }
@@ -105,10 +126,17 @@ export default {
     },
     toggleAssetType(val) {
       this.assetType = val;
-      this.getData();
+      if (this.assetType != 0) {
+        this.getData();
+      }
     },
-    handleDetail() {
-      this.$refs["Dialog"].init();
+    refresh() {
+      if (this.type == 1 && this.assetType != 0) {
+        this.getData();
+      }
+    },
+    handleDetail(item) {
+      this.$refs["Dialog"].init(item);
     }
   }
 };
@@ -202,6 +230,14 @@ export default {
             width: 126px;
             height: 128px;
           }
+        }
+        .noData {
+          font-size: 28px;
+          font-family: PingFang SC;
+          font-weight: 400;
+          color: #452b0d;
+          text-align: center;
+          padding: 30px 0;
         }
       }
       .footCon {

@@ -91,6 +91,11 @@ export default {
         }
       });
     }
+  },
+  beforeDestroy() {
+    if (this.toast) {
+      this.toast.clear();
+    }
   }
 };
 </script>
