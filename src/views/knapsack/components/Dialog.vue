@@ -98,7 +98,7 @@ export default {
   methods: {
     init(info) {
       this.show = true;
-      this.getDetail(info.id);
+      this.getDetail(info.typeId);
     },
     getDetail(id) {
       assetInterfaceApi({
