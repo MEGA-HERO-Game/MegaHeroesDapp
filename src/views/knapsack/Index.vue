@@ -6,29 +6,51 @@
         <div class="nav" :class="{active: type == 2}" @click="toggleAsset(2)">钱包资产</div>
       </div>
       <div class="content">
-        <div class="toogleList mh-center" v-if="type == 2">
-          <div class="toogleItem leftItem mh-center" :class="{active: isIBox == 2}" @click="toggleIBox(2)">Mega Hero资产</div>
-          <div class="toogleItem rightItem mh-center" :class="{active: isIBox == 1}" @click="toggleIBox(1)">IBOX资产</div>
-        </div>
-        <div class="navList mh-center">
-          <div class="navItem mh-center" :class="{active:assetType == 2}" @click="toggleAssetType(2)">神灵</div>
-          <div class="navItem mh-center" :class="{active:assetType == 0}" @click="toggleAssetType(0)">道具</div>
-          <div class="navItem mh-center" :class="{active:assetType == 3}" @click="toggleAssetType(3)">精灵</div>
-        </div>
-        <div class="list mh-flex mh-line-feed" v-if="assetType == 2">
-          <div class="item" v-for="(item, index) in godsList" :key="index" @click="handleDetail(item)">
-            <img :src="formatHeroImg(item.icon)" alt="">
+        <div v-if="type == 2">
+          <div class="toogleList mh-center">
+            <div class="toogleItem leftItem mh-center" :class="{active: isIBox == 1}" @click="toggleIBox(2)">Mega Hero资产</div>
+            <div class="toogleItem rightItem mh-center" :class="{active: isIBox == 2}" @click="toggleIBox(1)">IBOX资产</div>
           </div>
-          <div v-if="loadComplete && (!godsList || !godsList.length)" class="noData mh-flex-1">暂无数据</div>
-        </div>
-        <div class="list mh-flex mh-line-feed" v-if="assetType == 0">
-          <div class="noData mh-flex-1">暂无数据</div>
-        </div>
-        <div class="list mh-flex mh-line-feed" v-if="assetType == 3">
-          <div class="item" v-for="(item, index) in spiritList" :key="index" @click="handleDetail(item)">
-            <img :src="formatHeroImg(item.icon)" alt="">
+          <!-- <div class="navList mh-center">
+            <div class="navItem mh-center active">全部</div>
+            <div class="navItem mh-center">神灵</div>
+            <div class="navItem mh-center">道具</div>
+            <div class="navItem mh-center">精灵</div>
+          </div> -->
+          <div class="list mh-flex mh-line-feed" v-if="isIBox == 2">
+            <div class="item" v-for="(item, index) in nftList" :key="index" @click="handleDetail(item)">
+              <img :src="item.pic" alt="">
+            </div>
+            <div v-if="loadComplete && (!nftList || !nftList.length)" class="noData mh-flex-1">暂无数据</div>
           </div>
-          <div v-if="loadComplete && (!spiritList || !spiritList.length)" class="noData mh-flex-1">暂无数据</div>
+          <div class="list mh-flex mh-line-feed" v-if="isIBox == 1">
+            <div class="item" v-for="(item, index) in iboxList" :key="index" @click="handleIBox(item)">
+              <img :src="item.pic" alt="">
+            </div>
+            <div v-if="loadComplete && (!iboxList || !iboxList.length)" class="noData mh-flex-1">暂无数据</div>
+          </div>
+        </div>
+        <div v-if="type == 1">
+          <div class="navList mh-center">
+            <div class="navItem mh-center" :class="{active:assetType == 2}" @click="toggleAssetType(2)">神灵</div>
+            <div class="navItem mh-center" :class="{active:assetType == 0}" @click="toggleAssetType(0)">道具</div>
+            <div class="navItem mh-center" :class="{active:assetType == 3}" @click="toggleAssetType(3)">精灵</div>
+          </div>
+          <div class="list mh-flex mh-line-feed" v-if="assetType == 2">
+            <div class="item" v-for="(item, index) in godsList" :key="index" @click="handleDetail(item)">
+              <img :src="formatHeroImg(item.icon)" alt="">
+            </div>
+            <div v-if="loadComplete && (!godsList || !godsList.length)" class="noData mh-flex-1">暂无数据</div>
+          </div>
+          <div class="list mh-flex mh-line-feed" v-if="assetType == 0">
+            <div class="noData mh-flex-1">暂无数据</div>
+          </div>
+          <div class="list mh-flex mh-line-feed" v-if="assetType == 3">
+            <div class="item" v-for="(item, index) in spiritList" :key="index" @click="handleDetail(item)">
+              <img :src="formatHeroImg(item.icon)" alt="">
+            </div>
+            <div v-if="loadComplete && (!spiritList || !spiritList.length)" class="noData mh-flex-1">暂无数据</div>
+          </div>
         </div>
         <div class="mh-flex mh-align-between mh-vertical-center footCon">
           <div class="home-title mh-center" @click="refresh">刷新</div>
@@ -53,6 +75,8 @@ import { diamondsOption, diamondsPrice, receivedOption } from "@/utils/status";
 import { getConfig, getUsdtPrice } from "@/config";
 import { assetInterfaceApi } from "@/api/user";
 import imgPath from "@/views/mixins/imgPath";
+import { getXWorldService } from "@/xworldjs/xworldjs";
+import { metadataApi } from "@/api/user";
 export default {
   name: "KnapsackIndex",
   components: { LoadingModal, TipModal, Dialog },
@@ -68,7 +92,9 @@ export default {
       type: 1, //1  游戏资产  2 钱包资产
       isIBox: 2, // 1 IBOX资产  2Mega Hero资产
       assetType: 2, //资产类型，2.神灵，3.精灵  0.道具
-      loadComplete: false
+      loadComplete: false,
+      nftList: [], //
+      iboxList: [] //
     };
   },
   watch: {
@@ -80,6 +106,8 @@ export default {
           this.accountInfo.token
         ) {
           this.getData();
+          this.getNftData();
+          this.getIBoxData();
         }
       },
       deep: true,
@@ -114,6 +142,33 @@ export default {
           this.loadComplete = true;
         });
     },
+    getNftData() {
+      getXWorldService()
+        .mpNFTContract.getNFTs(this.account)
+        .then(res => {
+          console.log("res", res);
+        });
+    },
+    getIBoxData() {
+      this.iboxList = [];
+      getXWorldService()
+        .iboxTokenContract.getIboxTokenId(this.account)
+        .then(res => {
+          for (let i = 0; i < res.length; i++) {
+            this.getMetaData(res[i]);
+          }
+        });
+    },
+    getMetaData(tokenId) {
+      metadataApi({
+        tokenId: tokenId,
+        assetType: "iBox"
+      }).then(response => {
+        if (response.code == 1) {
+          this.iboxList.push(response.data);
+        }
+      });
+    },
     toggleAsset(val) {
       this.type = val;
       if (this.type == 1 && this.assetType != 0) {
@@ -137,6 +192,14 @@ export default {
     },
     handleDetail(item) {
       this.$refs["Dialog"].init(item);
+    },
+    handleIBox(item) {
+      this.$router.push({
+        path: "/iBox/exchange",
+        query: {
+          id: item.tokenId
+        }
+      });
     }
   }
 };

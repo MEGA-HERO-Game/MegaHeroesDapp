@@ -4,16 +4,12 @@
       <img @click="show = false" class="close-icon" src="@/assets/home/close.png" alt="">
       <div class="header mh-flex mh-vertical-center">
         <div class="headCon">
-          <img src="@/assets/knapsack/img_1.png" alt="">
+          <img :src="formatHeroImg(info.icon)" alt="">
         </div>
         <div class="info">
-          <div class="name">牛顿</div>
+          <div class="name">{{info.name}}</div>
           <div class="star mh-center">
-            <img src="@/assets/knapsack/icon_10.png" alt="">
-            <img src="@/assets/knapsack/icon_10.png" alt="">
-            <img src="@/assets/knapsack/icon_10.png" alt="">
-            <img src="@/assets/knapsack/icon_10.png" alt="">
-            <img src="@/assets/knapsack/icon_10.png" alt="">
+            <img v-for="(item, index) in info.supportLevel" :key="index" src="@/assets/knapsack/icon_10.png" alt="">
           </div>
         </div>
         <div class="rightCon">
@@ -26,51 +22,60 @@
         <div class="chartItem mh-center">
           <img class="chartImg" src="@/assets/knapsack/icon_12.png" alt="">
           <div class="progressCon">
-            <div></div>
-            <div class="progress"></div>
+            <div class="progress_num">{{info.attack}}/999</div>
+            <div class="progress progress_attack">
+              <div class="progressChild" :style="'width: '+(info.attack/999*100)+'%'"></div>
+            </div>
           </div>
         </div>
         <div class="chartItem mh-center">
           <img class="chartImg" src="@/assets/knapsack/icon_13.png" alt="">
           <div class="progressCon">
-            <div></div>
-            <div class="progress"></div>
+            <div class="progress_num">{{info.defense}}/999</div>
+            <div class="progress progress_defense">
+              <div class="progressChild" :style="'width: '+(info.defense/999*100)+'%'"></div>
+            </div>
           </div>
         </div>
         <div class="chartItem mh-center">
           <img class="chartImg" src="@/assets/knapsack/icon_14.png" alt="">
           <div class="progressCon">
-            <div></div>
-            <div class="progress"></div>
+            <div class="progress_num">{{info.speed}}/999</div>
+            <div class="progress progress_speed">
+              <div class="progressChild" :style="'width: '+(info.speed/999*100)+'%'"></div>
+            </div>
           </div>
         </div>
         <div class="chartItem mh-center">
           <img class="chartImg" src="@/assets/knapsack/icon_15.png" alt="">
           <div class="progressCon">
-            <div></div>
-            <div class="progress"></div>
+            <div class="progress_num">{{info.hp}}/999</div>
+            <div class="progress progress_hp">
+              <div class="progressChild" :style="'width: '+(info.hp/999*100)+'%'"></div>
+            </div>
           </div>
         </div>
       </div>
       <div class="knapsack-title text-center">专属技能</div>
       <div class="mh-flex skill">
         <div class="skillItem mh-center">
-          <img src="@/assets/knapsack/img_6.png" alt="">
-          <div>技能名字</div>
+          <img :src="formatSkillImg(info.skillIcon1)" alt="">
+          <div>{{info.skillName1}}</div>
         </div>
         <div class="skillItem mh-center">
-          <img src="@/assets/knapsack/img_7.png" alt="">
-          <div>技能名字</div>
+          <img :src="formatSkillImg(info.skillIcon2)" alt="">
+          <div>{{info.skillName2}}</div>
         </div>
       </div>
       <div class="intro">
-        牛顿是深海的防御者，他的人生格言就是”人在塔在”。他可以对敌人造成高额输出，还有极高的几率击晕对手。也可以靠自身的铠甲帮助队友吸收敌人造成的大量伤害。
+        {{info.skillIntro1}}<br>
+        {{info.skillIntro2}}
       </div>
       <div class="home-title mh-center">存入</div>
       <div class="footerCon">
         <div class="footerItem mh-center">
           <div class="name mh-flex-1 text-right">Token id</div>
-          <div class="mh-flex-1 text-left">6569911211</div>
+          <div class="mh-flex-1 text-left">{{info.typeId}}</div>
         </div>
         <div class="mh-center">
           <div class="name mh-flex-1 text-right">合约地址</div>
@@ -84,21 +89,24 @@
 <script>
 import { mapGetters } from "vuex";
 import { assetInterfaceApi } from "@/api/user";
+import imgPath from "@/views/mixins/imgPath";
 export default {
   name: "Dialog",
+  mixins: [imgPath],
   props: {},
   computed: {
     ...mapGetters(["accountInfo", "account", "web3"])
   },
   data() {
     return {
-      show: false
+      show: false,
+      info: {}
     };
   },
   methods: {
     init(info) {
       this.show = true;
-      this.getDetail(info.typeId);
+      this.getDetail(info.typeId || info.tokenId);
     },
     getDetail(id) {
       assetInterfaceApi({
@@ -110,6 +118,7 @@ export default {
       })
         .then(response => {
           if (response.code == 1) {
+            this.info = response.info;
           } else {
             this.$toast(response.errorMessage);
           }
@@ -215,12 +224,53 @@ export default {
           height: 62px;
         }
         .progressCon {
+          position: relative;
+          .progress_num {
+            font-size: 32px;
+            font-family: Alibaba PuHuiTi;
+            font-weight: bold;
+            color: #ffffff;
+            position: absolute;
+            bottom: 0px;
+            left: 10px;
+          }
           .progress {
             width: 270px;
             height: 12px;
+            border-radius: 12px;
+            .progressChild {
+              width: 0;
+              max-width: 100%;
+              height: 100%;
+            }
+          }
+          .progress_attack {
             background-color: #724600;
             border: 2px solid #f5a031;
-            border-radius: 12px;
+            .progressChild {
+              background-color: #f5a031;
+            }
+          }
+          .progress_defense {
+            background-color: #054d85;
+            border: 2px solid #40a3ea;
+            .progressChild {
+              background-color: #40a3ea;
+            }
+          }
+          .progress_speed {
+            background-color: #075354;
+            border: 2px solid #37ce73;
+            .progressChild {
+              background-color: #37ce73;
+            }
+          }
+          .progress_hp {
+            background-color: #5f1616;
+            border: 2px solid #e85857;
+            .progressChild {
+              background-color: #e85857;
+            }
           }
         }
       }
