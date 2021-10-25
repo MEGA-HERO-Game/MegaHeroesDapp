@@ -1,13 +1,14 @@
 // import Bus from '@/utils/bus'
-import { userLoginApi } from "@/api/user";
+import { userLoginApi, centerApi } from "@/api/user";
 import router from '@/router'
 import AES from '@/utils/AES.js'
 import { Toast } from 'vant';
 
 const state = {
   account: '',
-  accountInfo: {},
-  signatureInfo: {},
+  accountInfo: {}, //用户信息
+  signatureInfo: {}, //签名信息
+  gamecoin: 0, //获取游戏内钻石数量
 }
 
 const mutations = {
@@ -19,6 +20,9 @@ const mutations = {
   },
   SET_SIGNATURE_INFO: (state, signatureInfo) => {
     state.signatureInfo = signatureInfo
+  },
+  SET_GAME_COIN: (state, gamecoin) => {
+    state.gamecoin = gamecoin
   },
 }
 
@@ -37,6 +41,7 @@ const actions = {
         })
       } else {
         commit('SET_USER_INFO', {});
+        commit('SET_SIGNATURE_INFO', {});
       }
       resolve()
     })
@@ -79,8 +84,29 @@ const actions = {
             router.push({ name: 'Profile' })
           } else {
             dispatch('userInfoFun')
+            dispatch('getGameCenter', {
+              cmd: "getGameCoin",
+              data: {
+                account: info.data.address
+              }
+            })
           }
           resolve()
+        } else {
+          Toast(response.message);
+          reject(response.message)
+        }
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+  getGameCenter({ commit, state }, info) {
+    return new Promise((resolve, reject) => {
+      centerApi(info.data, info.cmd).then(response => {
+        if (response.code == 0) {
+          commit('SET_GAME_COIN', response.data.gamecoin);
+          resolve(response)
         } else {
           Toast(response.message);
           reject(response.message)

@@ -49,53 +49,45 @@ export default {
   mounted() {},
   methods: {
     async submitData() {
-      this.web3.eth.sign(
+      if (!this.email) {
+        this.$toast("请输入邮箱");
+        return;
+      }
+      if (!this.password) {
+        this.$toast("请输入密码");
+        return;
+      }
+      if (this.password.length < 6 || this.password.length > 8) {
+        this.$toast("密码长度须在6位至8位之间");
+        return;
+      }
+      if (this.password != this.password1) {
+        this.$toast("两次输入密码不一致");
+        return;
+      }
+      let sign = await this.web3.eth.personal.sign(
         Web3.utils.utf8ToHex(this.prefix + this.signatureInfo.nonceNum),
         this.account
-      ).then((res, res1) => {
-        console.log("sign", res, res1)
-      })
-      // if (!this.email) {
-      //   this.$toast("请输入邮箱");
-      //   return;
-      // }
-      // if (!this.password) {
-      //   this.$toast("请输入密码");
-      //   return;
-      // }
-      // if (this.password.length < 6 || this.password.length > 8) {
-      //   this.$toast("密码长度须在6位至8位之间");
-      //   return;
-      // }
-      // if (this.password != this.password1) {
-      //   this.$toast("两次输入密码不一致");
-      //   return;
-      // }
-      // this.web3.eth.sign(
-      //   Web3.utils.utf8ToHex(this.prefix + this.signatureInfo.nonceNum),
-      //   this.account
-      // ).then((res, res1) => {
-      //   console.log("sign", res, res1)
-      // })
-      
-      // userLoginApi(
-      //   {
-      //     account: this.email,
-      //     password: md5(this.password),
-      //     code: this.code,
-      //     nonce: this.signatureInfo.nonce,
-      //     sign: sign
-      //   },
-      //   "register"
-      // )
-      //   .then(response => {
-      //     if (response.code == 0) {
-      //       this.$router.replace({ name: "Home" });
-      //     } else {
-      //       this.$toast(response.message);
-      //     }
-      //   })
-      //   .catch(error => {});
+      );
+
+      userLoginApi(
+        {
+          account: this.email,
+          password: md5(this.password),
+          code: this.code,
+          nonce: this.signatureInfo.nonce,
+          sign: sign
+        },
+        "register"
+      )
+        .then(response => {
+          if (response.code == 0) {
+            this.$router.replace({ name: "Home" });
+          } else {
+            this.$toast(response.message);
+          }
+        })
+        .catch(error => {});
     }
   }
 };

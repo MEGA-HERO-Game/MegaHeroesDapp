@@ -1,7 +1,5 @@
 import request from '@/utils/request'
 import Qs from 'qs'
-// 用户中心重构 begin
-
 /**
  *  获取nonce并返回该钱包是否已经是注册账户
  */
@@ -13,18 +11,16 @@ export function userLoginApi(data, cmd) {
     })
 }
 
-// 用户中心重构 end
-
 /**
- *  注册登录  编辑用户信息
+ *  获取游戏内钻石数量
  */
-export function userInterfaceApi(data) {
+export function centerApi(data, cmd) {
     return request({
-        url: '/mh_official/user/interface',
-        method: 'post',
-        data: data
+        url: `/center?${Qs.stringify(data)}&cmd=${cmd}`,
+        method: 'get',
     })
 }
+
 
 /**
  *  报名激活  获取用户报名抽签状态
