@@ -16,70 +16,86 @@
       <van-field class="mh_input" v-model="password" type="password" placeholder="请输入密码" />
       <div class="mh_form_tip">密码长度须在6位至8位之间</div>
       <van-field class="mh_input" v-model="password1" type="password" placeholder="请再次输入密码" />
-      <!-- <div class="mh-flex mh-align-between">
+      <div class="mh-flex mh-align-between">
         <van-field class="mh_input" v-model="code" placeholder="输入邀请码" />
         <div class="mh_form_code mh-center">邀请码</div>
-      </div> -->
+      </div>
     </div>
     <div class="foot_btn text-center" @click="submitData">完成</div>
   </div>
 </template>
 
 <script>
-import { Toast } from "vant";
-import { userInterfaceApi } from "@/api/user";
+import { userLoginApi } from "@/api/user";
 import { mapGetters } from "vuex";
-const md5 = require('md5');
+const md5 = require("md5");
+import Web3 from "web3";
 export default {
   name: "Register",
   components: {},
   computed: {
-    ...mapGetters(["accountInfo"])
+    ...mapGetters(["signatureInfo", "web3", "account"])
   },
   data() {
     return {
       email: "",
       password: "",
       password1: "",
-      code: ""
+      code: "",
+      prefix: "\u0099MH Private Msg:\n"
     };
   },
   created() {},
   mounted() {},
   methods: {
-    submitData() {
-      if (!this.email) {
-        Toast("请输入邮箱");
-        return;
-      }
-      if (!this.password) {
-        Toast("请输入密码");
-        return;
-      }
-      if (this.password.length < 6 || this.password.length > 8) {
-        Toast("密码长度须在6位至8位之间");
-        return;
-      }
-      if (this.password != this.password1) {
-        Toast("两次输入密码不一致");
-        return;
-      }
-      userInterfaceApi({
-        cmd: "EDIT_USER_DETAIL",
-        requestUserId: this.accountInfo.userId,
-        token: this.accountInfo.token,
-        requestTime: new Date().valueOf(),
-        email: this.email,
-        password: md5(this.password)
+    async submitData() {
+      this.web3.eth.sign(
+        Web3.utils.utf8ToHex(this.prefix + this.signatureInfo.nonceNum),
+        this.account
+      ).then((res, res1) => {
+        console.log("sign", res, res1)
       })
-        .then(response => {
-          if (response.code == 1) {
-            this.$router.replace({ name: "Home" });
-          } else {
-            Toast(response.errorMessage);
-          }
-        })
-        .catch(error => {});
+      // if (!this.email) {
+      //   this.$toast("请输入邮箱");
+      //   return;
+      // }
+      // if (!this.password) {
+      //   this.$toast("请输入密码");
+      //   return;
+      // }
+      // if (this.password.length < 6 || this.password.length > 8) {
+      //   this.$toast("密码长度须在6位至8位之间");
+      //   return;
+      // }
+      // if (this.password != this.password1) {
+      //   this.$toast("两次输入密码不一致");
+      //   return;
+      // }
+      // this.web3.eth.sign(
+      //   Web3.utils.utf8ToHex(this.prefix + this.signatureInfo.nonceNum),
+      //   this.account
+      // ).then((res, res1) => {
+      //   console.log("sign", res, res1)
+      // })
+      
+      // userLoginApi(
+      //   {
+      //     account: this.email,
+      //     password: md5(this.password),
+      //     code: this.code,
+      //     nonce: this.signatureInfo.nonce,
+      //     sign: sign
+      //   },
+      //   "register"
+      // )
+      //   .then(response => {
+      //     if (response.code == 0) {
+      //       this.$router.replace({ name: "Home" });
+      //     } else {
+      //       this.$toast(response.message);
+      //     }
+      //   })
+      //   .catch(error => {});
     }
   }
 };

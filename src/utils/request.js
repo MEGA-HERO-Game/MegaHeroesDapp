@@ -26,13 +26,14 @@ service.interceptors.response.use(
   response => {
     if (response.status === 200) {
       const res = response.data;
-      if (res.code == 1) {
-        return res
-      } else {
-        Toast(res.errorMessage || res.message);
-        return res
-        // return Promise.reject(new Error(res.errorMessage || 'Error'))
-      }
+      return res
+      // if (res.code == 1) {
+      //   return res
+      // } else {
+      //   Toast(res.errorMessage || res.message);
+      //   return res
+      //   // return Promise.reject(new Error(res.errorMessage || 'Error'))
+      // }
     } else {
       Toast('网络异常');
       return Promise.reject(response)

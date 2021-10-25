@@ -1,4 +1,19 @@
 import request from '@/utils/request'
+import Qs from 'qs'
+// 用户中心重构 begin
+
+/**
+ *  获取nonce并返回该钱包是否已经是注册账户
+ */
+export function userLoginApi(data, cmd) {
+    return request({
+        url: `/userLogin?cmd=${cmd}`,
+        method: 'post',
+        data: Qs.stringify(data)
+    })
+}
+
+// 用户中心重构 end
 
 /**
  *  注册登录  编辑用户信息

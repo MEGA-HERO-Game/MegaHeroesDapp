@@ -13,6 +13,7 @@ const getters = {
   permission_routes: state => state.permission.routes,
   account: state => state.user.account,
   accountInfo: state => state.user.accountInfo,
+  signatureInfo: state => state.user.signatureInfo,
   web3: state => state.web3.web3,
   networkId: state => state.web3.networkId,
   web3Modal: state => state.web3.web3Modal,

@@ -25,7 +25,7 @@ module.exports = {
   devServer: {
     proxy: {
       '/api': {
-        target: 'http://mhweb.test.xworld.pro:28080',
+        target: 'http://test.asset.gfanx.pro',
         changeOrigin: true,
         ws: true,
         pathRewrite: {

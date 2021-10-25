@@ -1,10 +1,13 @@
 // import Bus from '@/utils/bus'
-import { userInterfaceApi } from "@/api/user";
+import { userLoginApi } from "@/api/user";
 import router from '@/router'
+import AES from '@/utils/AES.js'
+import { Toast } from 'vant';
 
 const state = {
   account: '',
-  accountInfo: {}
+  accountInfo: {},
+  signatureInfo: {},
 }
 
 const mutations = {
@@ -14,6 +17,9 @@ const mutations = {
   SET_USER_INFO: (state, accountInfo) => {
     state.accountInfo = accountInfo
   },
+  SET_SIGNATURE_INFO: (state, signatureInfo) => {
+    state.signatureInfo = signatureInfo
+  },
 }
 
 const actions = {
@@ -22,30 +28,62 @@ const actions = {
     return new Promise((resolve, reject) => {
       commit('SET_ACCOUNT', account)
       // Bus.$emit("CHANGEACCOUNT", account);
-      if(account){
-        dispatch('userInfoFun', {
-          cmd: "USER_LOGIN",
-          requestTime: (new Date()).valueOf(),
-          loginType: "1",
-          loginName: account
+      if (account) {
+        dispatch('userLoginFun', {
+          cmd: "getNonce",
+          data: {
+            address: account
+          }
         })
-      }else{
+      } else {
         commit('SET_USER_INFO', {});
       }
       resolve()
     })
   },
-  userInfoFun({ commit }, info) {
+  userInfoFun({ commit, state }, info) {
     return new Promise((resolve, reject) => {
-      userInterfaceApi(info).then(response => {
-        if (response.code == 1) {
-          commit('SET_USER_INFO', response.info);
-          if(response && response.info && !response.info.email &&  router.currentRoute.path !== '/profile/register'){
-            router.push({name: 'Profile'})
+      userLoginApi({ nonce: state.signatureInfo.nonce }, 'getUserInfo').then(response => {
+        if (response.code == 1 || response.code == 0) {
+          commit('SET_USER_INFO', JSON.parse(response.userInfo));
+          if (response && response.code == 1 && router.currentRoute.path !== '/profile/register') {
+            router.push({ name: 'Profile' })
           }
           resolve()
         } else {
-          reject(response.errorMessage)
+          Toast(response.message);
+          reject(response.message)
+        }
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+  userLoginFun({ commit, dispatch }, info) {
+    return new Promise((resolve, reject) => {
+      userLoginApi(info.data, info.cmd).then(response => {
+        if (response.code == 1 || response.code == 0) {
+          let result = AES.decrypt(response.nonce);
+          let nonceNum = "";
+          let address = "";
+          if (result) {
+            address = result.split(' ')[0];
+            nonceNum = result.split(' ')[1];
+          }
+          commit('SET_SIGNATURE_INFO', {
+            nonce: response.nonce,
+            nonceNum: nonceNum,
+            address: address
+          });
+          if (response && response.code == 0 && router.currentRoute.path !== '/profile/register') {
+            router.push({ name: 'Profile' })
+          } else {
+            dispatch('userInfoFun')
+          }
+          resolve()
+        } else {
+          Toast(response.message);
+          reject(response.message)
         }
       }).catch(error => {
         reject(error)
