@@ -1,6 +1,7 @@
 import { createWeb3Modal } from '@/web3/createWeb3Modal';
 import Web3 from "web3";
 import { getXWorldService } from "@/xworldjs/xworldjs";
+import { Toast } from 'vant';
 
 const state = {
   web3: null,
@@ -60,7 +61,14 @@ const actions = {
         networkId = 56;
       }
       commit('SET_NETWORKID', networkId)
+      let toast = Toast.loading({
+        message: "",
+        forbidClick: true,
+        loadingType: "spinner",
+        duration: 0
+      });
       await getXWorldService().initContract(web3.currentProvider);
+      toast.clear();
       dispatch('user/setAccount', address, { root: true })
       resolve();
     })

@@ -50,7 +50,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       userLoginApi({ nonce: state.signatureInfo.nonce }, 'getUserInfo').then(response => {
         if (response.code == 1 || response.code == 0) {
-          commit('SET_USER_INFO', JSON.parse(response.userInfo));
+          commit('SET_USER_INFO', response.userInfo);
           if (response && response.code == 1 && router.currentRoute.path !== '/profile/register') {
             router.push({ name: 'Profile' })
           }
@@ -65,8 +65,15 @@ const actions = {
     })
   },
   userLoginFun({ commit, dispatch }, info) {
+    let toast = Toast.loading({
+      message: "",
+      forbidClick: true,
+      loadingType: "spinner",
+      duration: 0
+    });
     return new Promise((resolve, reject) => {
       userLoginApi(info.data, info.cmd).then(response => {
+        toast.clear();
         if (response.code == 1 || response.code == 0) {
           let result = AES.decrypt(response.nonce);
           let nonceNum = "";
@@ -82,7 +89,7 @@ const actions = {
           });
           if (response && response.code == 0 && router.currentRoute.path !== '/profile/register') {
             router.push({ name: 'Profile' })
-          } else {
+          } else if (response && response.code == 1) {
             dispatch('userInfoFun')
             dispatch('getGameCenter', {
               cmd: "getGameCoin",
@@ -97,6 +104,7 @@ const actions = {
           reject(response.message)
         }
       }).catch(error => {
+        toast.clear();
         reject(error)
       })
     })

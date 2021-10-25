@@ -8,18 +8,65 @@
       <div class="rule-btn mh-center" @click="handleRule">规则说明</div>
       <div class="home-title mh-center" @click="jumpPage(1)">开始游戏</div>
     </div>
+
+    <div class="box">
+      <div class="name text-center">锁钻石卡NFT</div>
+      <div class="mh-flex mh-align-between dataCon">
+        <div class="mh-flex-1 leftItem">
+          <div class="dataLabel">当前奖金池总额</div>
+          <div class="numCon">
+            89567
+            <span>usdt</span>
+          </div>
+        </div>
+        <div class="mh-flex-1 rightItem">
+          <div class="dataLabel">APR</div>
+          <div class="percentage">236.69%</div>
+        </div>
+      </div>
+      <div class="content">
+        锁定功能必须在创建游戏角色的情况下，才能开启，将游戏内的钻石提取出来，转化为钻石卡NFT进行锁定，奖金池的资金来源为用户购买钻石消耗的USDT，其中60%会进入奖金池，个人的收益按照个人锁定资产价值跟锁定总资产价值占比进行分配
+      </div>
+      <div @click="jumpPage(4)" class="notyetopen-btn mh-center">进入</div>
+    </div>
+
+    <div class="banner">
+      <img src="@/assets/home/banner6.png" alt="">
+    </div>
+
     <div class="purchase-box">
+      <div class="gameCoin">
+        游戏内钻石余额：{{gamecoin}}
+        <img class="tip_icon" src="@/assets/home/tip_icon.png" alt="">
+      </div>
       <div class="purchase-text text-center">
         钻石价格：{{diamondsPrice}}USDT
         <span>（限时五折优惠）</span>
       </div>
       <div class="mh-center">
-        <div class="purchase-btn mh-center mr-18" @click="jumpPage(2)">立即购买</div>
-        <div class="purchase-btn mh-center" @click="jumpPage(5)">提取钻石</div>
+        <div class="purchase-btn mh-center mr-18 purchase-btn-flex-1" @click="jumpPage(2)">立即购买</div>
+      </div>
+      <div class="mh-center">
+        <div class="purchase-btn mh-center mr-18" @click="jumpPage(5)">提取钻石</div>
+        <div @click="jumpPage(6)" class="purchase-btn mh-center">存入钻石卡</div>
       </div>
     </div>
 
-    <div class="box optionBox">
+    <div class="banner">
+      <img src="@/assets/home/banner7.png" alt="">
+    </div>
+
+    <div class="box">
+      <div class="name text-center">iBox NFT交易平台</div>
+      <div class="goWebsite" @click="goWebsiteFun">
+        官网：https://www.ibox.fan   去购买
+      </div>
+      <div class="content">
+        在iBox交易平台可购买相应资产激活游戏账号或者购买资产存入到游戏中，增加游戏战斗力。将游戏内资产提取到钱包，可在iBox交易平台进行出售。
+      </div>
+    </div>
+
+    <!-- <div class="box optionBox">
       <div class="option mh-flex mh-align-between" v-for="(item, index) in diamondsOption" :key="index">
         <div class="label">{{item.name}}</div>
         <div class="val">（价值{{item.val}}钻石）</div>
@@ -28,7 +75,7 @@
         <div @click="jumpPage(3)" class="purchase-btn mh-center purchase-btns mr-18">立即购买</div>
         <div @click="jumpPage(6)" class="purchase-btn mh-center purchase-btns">存入钻石卡</div>
       </div>
-    </div>
+    </div> -->
     <!-- <div class="box">
       <img class="logo" src="@/assets/home/logo.png" alt="">
       <div class="content">
@@ -37,7 +84,7 @@
     </div> -->
 
     <!-- <div class="home-title mh-center">开始游戏</div> -->
-    <div class="banner">
+    <!-- <div class="banner">
       <img src="@/assets/home/banner5.png" alt="">
     </div>
     <div class="box">
@@ -46,22 +93,11 @@
         Mega Hero将部分的平台收益奖励给质押的用户，质押资产为钻石卡，收益按照区块进行分配，个人的收益按照个人资产价值跟质押总资产价值占比进行分配。
       </div>
       <div @click="jumpPage(4)" class="notyetopen-btn mh-center">进入</div>
-    </div>
+    </div> -->
+
 
     <div class="banner">
-      <img src="@/assets/home/banner2.png" alt="">
-    </div>
-    <div class="box">
-      <div class="name text-center">存入与提取</div>
-      <div class="content">
-        游戏内与钱包资产的互转，存入是指将用户钱包资产存入到游戏内，提取是指将游戏资产提取到钱包中。<br>
-        目前允许存入资产包括5星、6星神灵、精灵蛋、精灵、钻石卡。允许提取的资产包括5星、6星神灵、精灵、钻石。
-      </div>
-      <div @click="jumpPage(7)" class="notyetopen-btn mh-center">进入</div>
-    </div>
-
-    <div class="banner">
-      <img src="@/assets/home/banner2.png" alt="">
+      <img src="@/assets/home/banner8.png" alt="">
     </div>
     <div class="box">
       <div class="name text-center">iBox资产兑换</div>
@@ -70,6 +106,19 @@
       </div>
       <div @click="jumpPage(8)" class="notyetopen-btn mh-center">进入</div>
     </div>
+
+    <div class="banner">
+      <img src="@/assets/home/banner2.png" alt="">
+    </div>
+    <div class="box">
+      <div class="name text-center">游戏与钱包资产互转（存入与提取）</div>
+      <div class="content">
+        存入是指将用户钱包资产存入到游戏内，提取是指将游戏资产提取到钱包中。目前允许存入的资产包括5、6星神灵、精灵、钻石卡，允许提取的资产包括5、6神灵、钻石
+      </div>
+      <div @click="jumpPage(7)" class="notyetopen-btn mh-center">进入</div>
+    </div>
+
+    
 
     <!-- <div class="home-title mh-center">兑换</div>
     <div class="banner">
@@ -118,7 +167,7 @@ export default {
   name: "Home",
   components: { Rule },
   computed: {
-    ...mapGetters(["account"])
+    ...mapGetters(["account", "gamecoin"])
   },
   data() {
     return {
@@ -154,6 +203,9 @@ export default {
       } else if (val == 8) {
         this.$router.push({ path: "/iBox" });
       }
+    },
+    goWebsiteFun() {
+      window.open("https://www.ibox.fan", "_blank");
     }
   }
 };
@@ -197,14 +249,32 @@ export default {
   .purchase-box {
     background-color: #ead7ba;
     border-radius: 12px;
-    padding: 26px 0;
-    margin-bottom: 36px;
+    padding: 0 16px;
+    margin-bottom: 40px;
+    .gameCoin {
+      text-align: center;
+      padding: 20px 0 24px 0;
+      font-size: 32px;
+      font-family: PingFang SC;
+      font-weight: 600;
+      color: #40519d;
+      border-bottom: 1px dashed #c5ac84;
+      position: relative;
+      margin-bottom: 24px;
+      .tip_icon {
+        width: 33px;
+        height: 33px;
+        position: absolute;
+        top: 10px;
+        right: 16px;
+      }
+    }
     .purchase-text {
       font-size: 32px;
       font-family: PingFang SC;
-      font-weight: bold;
+      font-weight: 600;
       color: #452b0d;
-      margin-bottom: 21px;
+      margin-bottom: 44px;
       span {
         color: #d60019;
       }
@@ -219,17 +289,22 @@ export default {
     font-family: PingFang SC;
     font-weight: 600;
     color: #ffffff;
-    margin-bottom: 6px;
+    margin-bottom: 42px;
+  }
+  .purchase-btn-flex-1 {
+    width: 622px;
+    margin: 0 auto;
+    margin-bottom: 30px;
   }
   .purchase-btns {
     margin-top: 38px;
     margin-bottom: 0;
   }
-  .mr-18{
+  .mr-18 {
     margin-right: 18px;
   }
   .banner {
-    margin-bottom: 26px;
+    margin-bottom: 40px;
     img {
       width: 100%;
     }
@@ -238,7 +313,7 @@ export default {
     background-color: #e5d2b3;
     border-radius: 12px;
     position: relative;
-    padding: 26px 30px 44px 30px;
+    padding: 30px 40px 80px 42px;
     margin-bottom: 36px;
     .name {
       font-size: 32px;
@@ -246,8 +321,52 @@ export default {
       font-weight: 600;
       color: #000000;
     }
+    .dataCon {
+      margin-top: 46px;
+      .leftItem {
+        margin-right: 60px;
+      }
+      .leftItem,
+      .rightItem {
+        background-color: rgba(185, 150, 95, 0.4);
+        border-radius: 12px;
+        padding: 26px 0;
+        text-align: center;
+        .dataLabel {
+          font-size: 32px;
+          font-family: PingFang SC;
+          font-weight: bold;
+          color: #452b0d;
+          margin-bottom: 18px;
+        }
+        .numCon {
+          font-size: 32px;
+          font-family: PingFang SC;
+          font-weight: 600;
+          color: #d60019;
+          span {
+            font-size: 20px;
+          }
+        }
+        .percentage {
+          font-size: 32px;
+          font-family: PingFang SC;
+          font-weight: 600;
+          color: #40519d;
+        }
+      }
+    }
+    .goWebsite {
+      padding-top: 30px;
+      text-align: center;
+      font-size: 32px;
+      font-family: PingFang SC;
+      font-weight: 600;
+      color: #d60019;
+      text-decoration: underline;
+    }
     .content {
-      padding-top: 28px;
+      padding-top: 32px;
       font-size: 28px;
       font-family: PingFang SC;
       font-weight: 400;
@@ -256,9 +375,9 @@ export default {
     }
     .notyetopen-btn {
       margin: 0 auto;
-      margin-top: 24px;
+      margin-top: 46px;
       width: 500px;
-      height: 62px;
+      height: 80px;
       background: #b9965f;
       border-radius: 12px;
       font-size: 36px;
