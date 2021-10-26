@@ -12,7 +12,7 @@ export class OperatorProxyContract {
 
   // ibox兑换英雄及钻石卡资产
   //iboxId  ibox资产tokenid
-  //mpType 兑换资产英雄id数组
+  //mpType 兑换资产精灵、神灵类型id数组
   async exchangeIbox(iboxId, mpType) {
     return new Promise((resolve, reject) => {
       let txHash = "";
