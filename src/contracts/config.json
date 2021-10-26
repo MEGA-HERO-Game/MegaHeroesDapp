@@ -10,9 +10,9 @@
         "nft": "0xe15cBd8158618811Bd025527d3f17002c5A1f8A3",
         "ibox": "0x87b59F4E3129E89bA53333028945625a0eE46C66",
         "usdt": "0x04F535663110A392A6504839BEeD34E019FdB4E0",
-        "operator": "0x88af18201A650e785D8657BFC5FE99b54E75852D",
+        "operator": "0x9dCB77a1Be2F261AA4acBfF1A9AB586f64D32153",
         "ethHost": "wss://ws-testnet.hecochain.com",
-        "diamondcard": "0x213497Ab12FD71Ba7A3cd071220564C80D718f14",
+        "diamondcard": "0x572F37F925D0989D3c7bB14d92C80f08FF9E4B27",
         "diamondcardpool": "0x02688b80A0D6f92B515d485B9E346a4BA05cAA1a",
         "chainId": 256
     },
