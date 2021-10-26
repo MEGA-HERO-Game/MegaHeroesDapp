@@ -12,14 +12,11 @@ export class OperatorProxyContract {
 
   // ibox兑换英雄及钻石卡资产
   //iboxId  ibox资产tokenid
-  //mpIds 英雄类nft资产tokenid数组
-  //diaIds 钻石卡tokenid数组
-  //diaAmounts 每种钻石卡数量数组
-  //blockNumber v r s 合约验证服务器钱包签名需要
-  async exchangeIbox(iboxId, mpIds, diaIds, diaAmounts, blockNumber, v, r, s) {
+  //mpType 兑换资产类型数组
+  async exchangeIbox(iboxId, mpType) {
     return new Promise((resolve, reject) => {
       let txHash = "";
-      this.contract.exchangeIbox(iboxId, mpIds, diaIds, diaAmounts, blockNumber, v, r, s, {
+      this.contract.exchangeIbox(iboxId, mpType, {
         from:
           account
       }).on('transactionHash', function (hash) {
