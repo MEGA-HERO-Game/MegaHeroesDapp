@@ -30,6 +30,28 @@ export class OperatorProxyContract {
       });
     });
   }
+  
+  // ibox销毁激活
+  //iboxId  ibox资产tokenid
+  //mpType 兑换资产类型数组
+  async activateIbox(iboxId, mpType) {
+    return new Promise((resolve, reject) => {
+      let txHash = "";
+      this.contract.activateIbox(iboxId, mpType, {
+        from:
+          account
+      }).on('transactionHash', function (hash) {
+        txHash = hash;
+      }).on('receipt', function (receipt) {
+        resolve(txHash)
+      }).on('error', function (error) {
+        reject(error);
+      }).catch(error => {
+        reject(error);
+      });
+    });
+  }
+  
 
   // 用户提取游戏内资产
   //mpIds 英雄类nft资产tokenid数组
