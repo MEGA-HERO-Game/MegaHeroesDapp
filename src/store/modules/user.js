@@ -76,6 +76,7 @@ const actions = {
         toast.clear();
         if (response.code == 1 || response.code == 0) {
           let result = AES.decrypt(response.nonce);
+          console.log("resultresult", result)
           let nonceNum = "";
           let address = "";
           if (result) {
@@ -83,6 +84,7 @@ const actions = {
             nonceNum = result.split(' ')[1];
           }
           commit('SET_SIGNATURE_INFO', {
+            code: response.code,
             nonce: response.nonce,
             nonceNum: nonceNum,
             address: address
