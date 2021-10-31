@@ -30,6 +30,8 @@ import { userLoginApi } from "@/api/user";
 import { mapGetters } from "vuex";
 const md5 = require("md5");
 import Web3 from "web3";
+import AES from "@/utils/AES.js";
+import BigNumber from "bignumber.js";
 export default {
   name: "Register",
   components: {},
@@ -41,8 +43,7 @@ export default {
       email: "",
       password: "",
       password1: "",
-      code: "",
-      prefix: "\u0099MH Private Msg:\n"
+      code: ""
     };
   },
   created() {},
@@ -65,17 +66,35 @@ export default {
         this.$toast("两次输入密码不一致");
         return;
       }
-      let sign = await this.web3.eth.personal.sign(
-        Web3.utils.utf8ToHex(this.prefix + this.signatureInfo.nonceNum),
+
+      let nonceNum = this.signatureInfo.nonceNum;
+      console.log(
+        "nonceNum",
+        nonceNum,
+        new BigNumber(nonceNum).plus(1).toString()
+      );
+      let web3Sign = await this.web3.eth.personal.sign(
+        new BigNumber(nonceNum).plus(1).toString(),
         this.account
       );
+      console.log("web3Sign", web3Sign);
+      let nonce = AES.encrypt(this.account + " " + web3Sign);
+      console.log("nonce", nonce);
+
+      let sign = AES.signSecret({
+        account: this.email,
+        password: md5(this.password),
+        code: this.code,
+        nonce: nonce,
+        cmd: "register"
+      });
 
       userLoginApi(
         {
           account: this.email,
           password: md5(this.password),
           code: this.code,
-          nonce: this.signatureInfo.nonce,
+          nonce: nonce,
           sign: sign
         },
         "register"
