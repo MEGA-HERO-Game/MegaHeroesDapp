@@ -76,7 +76,7 @@ export default {
   name: "PledgeIndex",
   components: { LoadingModal, TipModal },
   computed: {
-    ...mapGetters(["accountInfo", "account", "web3"])
+    ...mapGetters(["account", "web3"])
   },
   data() {
     return {
@@ -103,13 +103,9 @@ export default {
     };
   },
   watch: {
-    accountInfo: {
+    account: {
       handler: function(val, oldVal) {
-        if (
-          this.accountInfo &&
-          this.accountInfo.userId &&
-          this.accountInfo.token
-        ) {
+        if (this.account) {
           this.initData();
         }
       },
@@ -205,7 +201,7 @@ export default {
       let D = this.diamondsPrice;
       // 可分配的U * 一年要分出去U的比例 / 已经质押的资产价值
       console.log("X Y Z C D", X, Y, Z, C, D);
-      if(C != 0){
+      if (C != 0) {
         this.apy = ((X - Y) * ((Z * 10512000) / 100)) / (C * D);
       }
     },

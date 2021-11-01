@@ -12,7 +12,8 @@
         游戏角色未创建<br>请使用创建的账号和密码<br>登录游戏客户端，并创建角色
       </div>
       <div v-if="status == 4">
-        游戏角色创建成功<br>所在游戏服务器：宙斯神庙
+        游戏角色创建成功
+        <!-- <br>所在游戏服务器：宙斯神庙 -->
       </div>
     </div>
     <div v-if="status == 0" class="home-title mh-center" @click="handleRule">查看规则</div>
@@ -39,13 +40,13 @@
 
 <script>
 import Rule from "@/components/Rule";
-import { drawInterfaceApi } from "@/api/user";
+import { userGameApi } from "@/api/user";
 import { mapGetters } from "vuex";
 export default {
   name: "GameIndex",
   components: { Rule },
   computed: {
-    ...mapGetters(["accountInfo"])
+    ...mapGetters(["account"])
   },
   data() {
     return {
@@ -53,13 +54,9 @@ export default {
     };
   },
   watch: {
-    accountInfo: {
+    account: {
       handler: function(val, oldVal) {
-        if (
-          this.accountInfo &&
-          this.accountInfo.userId &&
-          this.accountInfo.token
-        ) {
+        if (this.account) {
           this.getDraw();
         }
       },
@@ -77,17 +74,17 @@ export default {
       this.$router.push({ name: "Purchase" });
     },
     getDraw() {
-      drawInterfaceApi({
-        cmd: "GET_GAME_DRAW_STATUS",
-        requestUserId: this.accountInfo.userId,
-        token: this.accountInfo.token,
-        requestTime: new Date().valueOf()
-      })
+      userGameApi(
+        {
+          userId: this.account
+        },
+        "getStatus"
+      )
         .then(response => {
-          if (response.code == 1) {
-            this.status = response.status;
+          if (response.code == 0) {
+            this.status = response.data.gameStatus;
           } else {
-            Toast(response.errorMessage);
+            this.$toast(response.message);
           }
         })
         .catch(error => {});

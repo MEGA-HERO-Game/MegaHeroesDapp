@@ -96,7 +96,7 @@ const actions = {
             dispatch('getGameCenter', {
               cmd: "getGameCoin",
               data: {
-                account: info.data.address
+                nonce: response.nonce
               }
             })
           }

@@ -15,13 +15,13 @@
         <div class="mh-flex-1 leftItem">
           <div class="dataLabel">当前奖金池总额</div>
           <div class="numCon">
-            89567
+            {{poolremainUSDT | keepDecimals(2)}}
             <span>usdt</span>
           </div>
         </div>
         <div class="mh-flex-1 rightItem">
-          <div class="dataLabel">APR</div>
-          <div class="percentage">236.69%</div>
+          <div class="dataLabel">APY</div>
+          <div class="percentage">{{apy | keepDecimals(2)}}%</div>
         </div>
       </div>
       <div class="content">
@@ -163,6 +163,9 @@
 import Rule from "@/components/Rule";
 import { diamondsOption, diamondsPrice } from "@/utils/status";
 import { mapGetters } from "vuex";
+import { getXWorldService } from "@/xworldjs/xworldjs";
+import { getConfig } from "@/config";
+import { subtract, multiply, divide } from "@/utils/bignumber";
 export default {
   name: "Home",
   components: { Rule },
@@ -172,8 +175,22 @@ export default {
   data() {
     return {
       diamondsPrice,
-      diamondsOption
+      diamondsOption,
+      config: getConfig(),
+      poolremainUSDT: 0, //当前奖金池剩余总额
+      apy: 0 //收益率
     };
+  },
+  watch: {
+    account: {
+      handler: function(val, oldVal) {
+        if (this.account) {
+          this.getData();
+        }
+      },
+      deep: true,
+      immediate: true
+    }
   },
   created() {},
   mounted() {},
@@ -206,6 +223,52 @@ export default {
     },
     goWebsiteFun() {
       window.open("https://www.ibox.fan", "_blank");
+    },
+    async getData() {
+      let account = this.account;
+      // 获取合约usdt总额
+      let poolUSDT = await getXWorldService().usdtContract.balanceOfUsdt(
+        this.config.diamondcardpool
+      );
+      console.log("poolUSDT", poolUSDT);
+
+      // 获取已经分出去的，但用户还没领取的usdt总额
+      let poolrewardUSDT = await getXWorldService().diamondPoolsContract.pendingAllRewards();
+      console.log("poolrewardUSDT", poolrewardUSDT);
+
+      // // 当前奖金池剩余总额
+      let poolremainUSDT = subtract(poolUSDT, poolrewardUSDT);
+      console.log("poolremainUSDT", poolremainUSDT);
+
+      this.poolremainUSDT = poolremainUSDT;
+
+      // 质押钻石总量
+      let totalamount = await getXWorldService().diamondPoolsContract.totalAmount();
+      console.log("totalamount", totalamount);
+      // 质押钻石总价值
+      let totalamountValue = multiply(totalamount, this.diamondsPrice);
+      console.log("totalamountValue", totalamountValue);
+
+      // 用户质押的总价值   根据用户质押的数据列表计算
+      // 设X为获取挖矿合约的usdt余额。 usdt.balanceOf(poolAddress)
+      let X = poolUSDT;
+      // 设Y为已经分出去的，但用户还没领取的usdt。 pool.pendingAllRewards()
+      let Y = poolrewardUSDT;
+      // 设Z为当前一个区块时间的收益率。 pool.ratePerBlock()
+      let Z = await getXWorldService().diamondPoolsContract.ratePerBlock();
+      // 设C为当前质押钻石总量。 pool.totalAmount()
+      let C = totalamount;
+      // 设D为钻石的价格。 调用其他中心化接口获取
+      let D = this.diamondsPrice;
+      // 可分配的U * 一年要分出去U的比例 / 已经质押的资产价值
+      console.log("X Y Z C D", X, Y, Z, C, D);
+      if (C != 0) {
+        // this.apy = ((X - Y) * ((Z * 10512000) / 100)) / (C * D);
+        this.apy = divide(
+          subtract(subtract(X, Y), divide(multiply(Z, 10512000), 100)),
+          subtract(C, D)
+        );
+      }
     }
   }
 };

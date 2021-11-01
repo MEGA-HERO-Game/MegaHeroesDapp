@@ -16,12 +16,33 @@ export function userLoginApi(data, cmd) {
  */
 export function centerApi(data, cmd) {
     return request({
-        url: `/center?${Qs.stringify(data)}&cmd=${cmd}`,
+        url: `/center?cmd=${cmd}`,
+        method: 'post',
+        data: Qs.stringify(data)
+    })
+}
+
+/**
+ *  获取游戏激活状态
+ */
+export function userGameApi(data, cmd) {
+    return request({
+        url: `/userGame?${Qs.stringify(data)}&cmd=${cmd}`,
         method: 'get',
+        // data: Qs.stringify(data)
     })
 }
 
 
+
+
+
+
+
+
+
+
+// old
 /**
  *  报名激活  获取用户报名抽签状态
  */
