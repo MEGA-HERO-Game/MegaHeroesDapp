@@ -12,18 +12,28 @@
 				"type": "address"
 			},
 			{
+				"internalType": "address",
+				"name": "_oldMPNFT",
+				"type": "address"
+			},
+			{
+				"internalType": "contract IERC20",
+				"name": "_usdt",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_invitationSigner",
+				"type": "address"
+			},
+			{
 				"internalType": "contract IERC721",
 				"name": "_IBox",
 				"type": "address"
 			},
 			{
 				"internalType": "address",
-				"name": "_oldMPNFT",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "_rootSigner",
+				"name": "_withdrawSigner",
 				"type": "address"
 			}
 		],
@@ -59,6 +69,43 @@
 		"anonymous": false,
 		"inputs": [
 			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "_user",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "_invitation",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "_id",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "_amount",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "_usdt",
+				"type": "uint256"
+			}
+		],
+		"name": "Buy",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
 				"indexed": false,
 				"internalType": "address",
 				"name": "_user",
@@ -78,15 +125,15 @@
 			},
 			{
 				"indexed": false,
-				"internalType": "uint256[]",
+				"internalType": "uint256",
 				"name": "_diaIds",
-				"type": "uint256[]"
+				"type": "uint256"
 			},
 			{
 				"indexed": false,
-				"internalType": "uint256[]",
+				"internalType": "uint256",
 				"name": "_diaAmounts",
-				"type": "uint256[]"
+				"type": "uint256"
 			},
 			{
 				"indexed": false,
@@ -115,6 +162,56 @@
 			}
 		],
 		"name": "OwnershipTransferred",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "_price",
+				"type": "uint256"
+			},
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "_id",
+				"type": "uint256"
+			}
+		],
+		"name": "Price",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "bytes32",
+				"name": "_sn",
+				"type": "bytes32"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "_user",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "_invitation",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "_usdt",
+				"type": "uint256"
+			}
+		],
+		"name": "Recharge",
 		"type": "event"
 	},
 	{
@@ -232,6 +329,88 @@
 		"type": "function"
 	},
 	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_id",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_amount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint8",
+				"name": "_v",
+				"type": "uint8"
+			},
+			{
+				"internalType": "bytes32",
+				"name": "_r",
+				"type": "bytes32"
+			},
+			{
+				"internalType": "bytes32",
+				"name": "_s",
+				"type": "bytes32"
+			},
+			{
+				"internalType": "address",
+				"name": "_invitation",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_blockNumber",
+				"type": "uint256"
+			}
+		],
+		"name": "buy",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "currentDiamondLimit",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "currentEpoch",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "currentMpLimit",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
 		"inputs": [],
 		"name": "diamondCard",
 		"outputs": [
@@ -239,6 +418,19 @@
 				"internalType": "contract DiamondCard",
 				"name": "",
 				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "diamondLimit",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -304,6 +496,64 @@
 				"internalType": "uint64",
 				"name": "isActivate",
 				"type": "uint64"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "idToPrice",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "invitationRate",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "invitationSigner",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "mpLimit",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -434,14 +684,7 @@
 	},
 	{
 		"inputs": [],
-		"name": "renounceOwnership",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "rootSigner",
+		"name": "platform",
 		"outputs": [
 			{
 				"internalType": "address",
@@ -453,14 +696,127 @@
 		"type": "function"
 	},
 	{
-		"inputs": [
+		"inputs": [],
+		"name": "platformRate",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "pool",
+		"outputs": [
 			{
 				"internalType": "address",
-				"name": "_oldMPNFT",
+				"name": "",
 				"type": "address"
 			}
 		],
-		"name": "setOldMPNFT",
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "poolRate",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "_sn",
+				"type": "bytes32"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_usdt",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint8",
+				"name": "_v",
+				"type": "uint8"
+			},
+			{
+				"internalType": "bytes32",
+				"name": "_r",
+				"type": "bytes32"
+			},
+			{
+				"internalType": "bytes32",
+				"name": "_s",
+				"type": "bytes32"
+			},
+			{
+				"internalType": "address",
+				"name": "_invitation",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_blockNumber",
+				"type": "uint256"
+			}
+		],
+		"name": "recharge",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "",
+				"type": "bytes32"
+			}
+		],
+		"name": "rechargeState",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "renounceOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_id",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_price",
+				"type": "uint256"
+			}
+		],
+		"name": "setDiamondCardPrice",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -469,11 +825,86 @@
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "_addr",
+				"name": "_signer",
 				"type": "address"
 			}
 		],
-		"name": "setSigner",
+		"name": "setInvitationSigner",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_diamondLimit",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_mpLimit",
+				"type": "uint256"
+			}
+		],
+		"name": "setLimit",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_platform",
+				"type": "address"
+			}
+		],
+		"name": "setPlatfrom",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_pool",
+				"type": "address"
+			}
+		],
+		"name": "setPool",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_platformRate",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_poolRate",
+				"type": "uint256"
+			}
+		],
+		"name": "setRate",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_signer",
+				"type": "address"
+			}
+		],
+		"name": "setWithdrawSigner",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -511,6 +942,19 @@
 		"type": "function"
 	},
 	{
+		"inputs": [],
+		"name": "totalRate",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
 		"inputs": [
 			{
 				"internalType": "address",
@@ -521,6 +965,19 @@
 		"name": "transferOwnership",
 		"outputs": [],
 		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "usdt",
+		"outputs": [
+			{
+				"internalType": "contract IERC20",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{
@@ -564,6 +1021,19 @@
 		"name": "withdraw",
 		"outputs": [],
 		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "withdrawSigner",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
 		"type": "function"
 	}
 ]
