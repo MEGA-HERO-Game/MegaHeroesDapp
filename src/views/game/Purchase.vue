@@ -77,7 +77,7 @@ export default {
       show: false,
       amount: 100,
       mp: 4000,
-      mpShopContract: new MPShopContract(),
+      operatorProxyContract: new OperatorProxyContract(),
       usdtContract: new UsdtContract(),
       mpNFTContract: new MPNFTContract(),
       config: getConfig(),
@@ -103,6 +103,7 @@ export default {
           this.accountInfo.token
         ) {
           this.getDraw();
+          this.operatorProxyContract.init(this.web3.currentProvider, this.config.operator)
           this.usdtContract
             .init(this.web3.currentProvider, this.config.usdt)
             .then(() => {
@@ -174,7 +175,7 @@ export default {
       });
     },
     async balanceOfUsdt(user) {
-      return this.mpShopContract.balanceOfUsdt(user);
+      return this.usdtContract.balanceOfUsdt(user);
     },
     async approveUsdt(price) {
       let that = this;
@@ -239,7 +240,7 @@ export default {
     async getOrderStatus(requestId) {
       // const id = Web3.utils.toBN(requestId);
       // console.log('requestId:::::', id.toNumber())
-      const result = await this.mpShopContract.getOrderStatus(requestId);
+      const result = 1;
       return result;
     },
     /***
@@ -255,7 +256,7 @@ export default {
     async goBuyMP(requestId, price, callback) {
       let that = this;
       console.log("buyMP:::::", getUsdtPrice(price));
-      await this.mpShopContract.buyMP(
+      await this.operatorProxyContract.buyMP(
         requestId,
         getUsdtPrice(price),
         that.account,
