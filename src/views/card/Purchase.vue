@@ -101,6 +101,7 @@ export default {
           this.accountInfo.userId &&
           this.accountInfo.token
         ) {
+          this.operatorProxyContract.init(this.web3.currentProvider, this.config.operator)
           this.usdtContract
             .init(this.web3.currentProvider, this.config.usdt)
             .then(() => {
