@@ -29,6 +29,25 @@ export class OperatorProxyContract {
     });
   }
   
+  //充值购买游戏内钻石
+  async recharge(tokenid, amount, v, r, s, invitation, blockNumber, account, callback) {
+    return new Promise((resolve, reject) => {
+      let txHash = "";
+      this.contract.recharge(tokenid, amount, v, r, s, invitation, blockNumber, {
+        from:
+          account
+      }).on('transactionHash', function (hash) {
+        txHash = hash;
+      }).on('receipt', function (receipt) {
+        resolve(txHash)
+      }).on('error', function (error) {
+        reject(error);
+      }).catch(error => {
+        reject(error);
+      });
+    });
+  }
+  
   // ibox兑换英雄及钻石卡资产
   //iboxId  ibox资产tokenid
   //mpType 兑换资产精灵、神灵类型id数组
