@@ -195,11 +195,7 @@ export default {
     },
     async MPShopRequestId(rId, amount) {
       let that = this;
-      that.mpTimeOut += 1;
-      const result = await that.getOrderStatus(rId);
-      if (result === 1) {
-        that.mpTimer = clearInterval(that.mpTimer);
-        try {
+      try {
           const data = await that.goBuyMP(rId, amount, err => {
             console.log("error:::123:", err);
           });
@@ -219,29 +215,7 @@ export default {
           that.$refs["LoadingModal"].close();
           that.$refs["TipModal"].initData(message);
         }
-      } else if (result === 2) {
-        console.log("该订单已支付");
-        that.$refs["LoadingModal"].close();
-        that.$refs["TipModal"].initData("该订单已支付");
-      } else {
-        if (that.mpTimeOut > 60) {
-          that.mpTimer = clearInterval(that.mpTimer);
-          console.error("支付超时，请重新发起支付!");
-          that.$refs["LoadingModal"].close();
-          that.$refs["TipModal"].initData("支付超时，请重新发起支付!");
-        }
-      }
-    },
-    /***
-     * 获取订单状态，1为待支付，2为支付完成
-     * @param requestId
-     * @returns {Promise<*>}
-     */
-    async getOrderStatus(requestId) {
-      // const id = Web3.utils.toBN(requestId);
-      // console.log('requestId:::::', id.toNumber())
-      const result = 1;
-      return result;
+     
     },
     /***
      *
