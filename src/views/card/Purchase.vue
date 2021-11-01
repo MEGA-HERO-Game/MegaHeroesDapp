@@ -62,7 +62,7 @@ import TipModal from "@/components/TipModal";
 import CardModal from "@/components/CardModal";
 import { mapGetters } from "vuex";
 import { diamondsOption, diamondsPrice, receivedOption } from "@/utils/status";
-import { DiamondNFTContract } from "@/xworldjs/diamond_NFT";
+import { OperatorProxyContract} from "@/xworldjs/operator_proxy";
 import { UsdtContract } from "@/xworldjs/usdt";
 import { getConfig, getUsdtPrice } from "@/config";
 export default {
@@ -84,7 +84,7 @@ export default {
       receivedShow: false,
       num: 1,
 
-      diamondNFTContract: new DiamondNFTContract(),
+      operatorProxyContract: new OperatorProxyContract(),
       usdtContract: new UsdtContract(),
       config: getConfig(),
       myUSDT: 0,
@@ -166,7 +166,7 @@ export default {
         }
       }
 
-      this.diamondNFTContract
+      this.operatorProxyContract
         .buyDiamondNft(
           this.cardInfo.val,
           amount,
