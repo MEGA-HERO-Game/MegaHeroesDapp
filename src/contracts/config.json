@@ -7,12 +7,12 @@
     "ethHost": "http://e.dev.xworld.pro:28080",
     "ht_test": {
         "shop": "0xc4A8FEDcD6b61eF1529C899fEE41B1898889f5BB",
-        "nft": "0xe15cBd8158618811Bd025527d3f17002c5A1f8A3",
+        "nft": "0xf6be91d34a25077DbA19246e4ec434F6dc699F19",
         "ibox": "0x87b59F4E3129E89bA53333028945625a0eE46C66",
         "usdt": "0x04F535663110A392A6504839BEeD34E019FdB4E0",
-        "operator": "0x9dCB77a1Be2F261AA4acBfF1A9AB586f64D32153",
+        "operator": "0x701c0AA53dD4aFB2FDf617F8B57f43cEA70FCFde",
         "ethHost": "wss://ws-testnet.hecochain.com",
-        "diamondcard": "0x572F37F925D0989D3c7bB14d92C80f08FF9E4B27",
+        "diamondcard": "0xe16726005F8d1226D95194148FD3B22005e685d2",
         "diamondcardpool": "0x02688b80A0D6f92B515d485B9E346a4BA05cAA1a",
         "chainId": 256
     },
