@@ -59,7 +59,7 @@
 import LoadingModal from "@/components/Loading";
 import TipModal from "@/components/TipModal";
 import Rule from "@/components/Rule";
-import { MPShopContract } from "@/xworldjs/mp_shop";
+import { OperatorProxyContract} from "@/xworldjs/operator_proxy";
 import { UsdtContract } from "@/xworldjs/usdt";
 import { MPNFTContract } from "@/xworldjs/mp_nft";
 import { mapGetters } from "vuex";
@@ -103,14 +103,13 @@ export default {
           this.accountInfo.token
         ) {
           this.getDraw();
-          this.mpShopContract
-            .init(this.web3.currentProvider, this.config.shop)
+          this.usdtContract
+            .init(this.web3.currentProvider, this.config.usdt)
             .then(() => {
               this.balanceOfUsdt(this.accountInfo.userId).then(res => {
                 this.myUSDT = res;
               });
             });
-          this.usdtContract.init(this.web3.currentProvider, this.config.usdt);
           this.mpNFTContract
             .init(this.web3.currentProvider, this.config.nft)
             .then(() => {
