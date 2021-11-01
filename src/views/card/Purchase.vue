@@ -63,6 +63,7 @@ import CardModal from "@/components/CardModal";
 import { mapGetters } from "vuex";
 import { diamondsOption, diamondsPrice, receivedOption } from "@/utils/status";
 import { OperatorProxyContract} from "@/xworldjs/operator_proxy";
+import { DiamondNFTContract } from "@/xworldjs/diamond_NFT";
 import { UsdtContract } from "@/xworldjs/usdt";
 import { getConfig, getUsdtPrice } from "@/config";
 export default {
