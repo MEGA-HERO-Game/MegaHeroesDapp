@@ -43,7 +43,7 @@
               收到数量
             </div>
           </div>
-          <div class="subname text-right">游戏内余额：2563</div>
+          <div class="subname text-right">游戏内余额：{{gamecoin}}</div>
         </div>
       </div>
     </div>
@@ -64,13 +64,13 @@ import TipModal from "@/components/TipModal";
 import Rule from "@/components/Rule";
 import { mapGetters } from "vuex";
 import { diamondsOption, diamondsPrice, receivedOption } from "@/utils/status";
-import { getConfig, getUsdtPrice } from "@/config";
+import { getConfig } from "@/config";
 import { getXWorldService } from "@/xworldjs/xworldjs";
 export default {
   name: "diamondsExtract",
   components: { LoadingModal, TipModal, Rule },
   computed: {
-    ...mapGetters(["accountInfo", "account", "web3"])
+    ...mapGetters(["account", "web3", "signatureInfo", "gamecoin"])
   },
   data() {
     return {
@@ -81,19 +81,10 @@ export default {
     };
   },
   watch: {
-    accountInfo: {
+    account: {
       handler: function(val, oldVal) {
-        if (
-          this.accountInfo &&
-          this.accountInfo.userId &&
-          this.accountInfo.token
-        ) {
-          getXWorldService().diamondNFTContract
-                .balanceOf(this.account, this.tokenid)
-                .then(res => {
-                  this.nftbalance = res.toNumber();
-                  console.log("nftbalance", this.nftbalance);
-           });
+        if (this.account) {
+          this.getData();
         }
       },
       deep: true,
@@ -103,6 +94,20 @@ export default {
   created() {},
   mounted() {},
   methods: {
+    getData() {
+      this.$store.dispatch("user/getGameCenter", {
+        cmd: "getGameCoin",
+        data: {
+          nonce: this.signatureInfo.nonce
+        }
+      });
+      getXWorldService()
+        .diamondNFTContract.balanceOf(this.account, this.tokenid)
+        .then(res => {
+          this.nftbalance = res.toNumber();
+          console.log("nftbalance", this.nftbalance);
+        });
+    },
     getNum(val) {
       this.amount = val;
     },
@@ -117,11 +122,7 @@ export default {
         return;
       }
       getXWorldService()
-        .diamondNFTContract.burn(
-          this.account,
-          this.tokenid,
-          this.amount
-        )
+        .diamondNFTContract.burn(this.account, this.tokenid, this.amount)
         .then(data => {
           // success
           this.$refs["LoadingModal"].close();
