@@ -3,7 +3,8 @@
     <div class="box">
       <div class="header mh-flex mh-align-between">
         <div>钱包余额：{{myUSDT}}USDT</div>
-        <div v-for="(item, index) in nftList" :key="index" v-if="item.id==amount">游戏内余额：{{item.amount}}钻石</div>
+        <div>游戏内余额：{{gamecoin}}钻石</div>
+        <!-- <div v-for="(item, index) in nftList" :key="index" v-if="item.id==amount">游戏内余额：{{item.amount}}钻石</div> -->
       </div>
       <div class="section mh-flex mh-center">
         <div class="usdt mh-center">
@@ -59,63 +60,35 @@
 import LoadingModal from "@/components/Loading";
 import TipModal from "@/components/TipModal";
 import Rule from "@/components/Rule";
-import { OperatorProxyContract} from "@/xworldjs/operator_proxy";
-import { UsdtContract } from "@/xworldjs/usdt";
-import { MPNFTContract } from "@/xworldjs/mp_nft";
 import { mapGetters } from "vuex";
 import { getConfig, getUsdtPrice } from "@/config";
-import { purchaseInterfaceApi, drawInterfaceApi } from "@/api/user";
+import { purchaseInterfaceApi, userGameApi } from "@/api/user";
 import { diamondsPrice } from "@/utils/status";
+import { getXWorldService } from "@/xworldjs/xworldjs";
 export default {
   name: "Purchase",
   components: { LoadingModal, TipModal, Rule },
   computed: {
-    ...mapGetters(["accountInfo", "account", "web3"])
+    ...mapGetters(["account", "web3", "signatureInfo", "gamecoin"])
   },
   data() {
     return {
       show: false,
       amount: 100,
       mp: 4000,
-      operatorProxyContract: new OperatorProxyContract(),
-      usdtContract: new UsdtContract(),
-      mpNFTContract: new MPNFTContract(),
       config: getConfig(),
       mpTimer: null,
       mpTimeOut: 0,
       myUSDT: 0,
       diamondsPrice,
-      status: null, //0  2  3  4
-      nftList: [
-        { id: 50, amount: 0 },
-        { id: 100, amount: 0 },
-        { id: 500, amount: 0 },
-        { id: 1000, amount: 0 }
-      ]
+      status: null //0  2  3  4
     };
   },
   watch: {
-    accountInfo: {
+    account: {
       handler: function(val, oldVal) {
-        if (
-          this.accountInfo &&
-          this.accountInfo.userId &&
-          this.accountInfo.token
-        ) {
-          this.getDraw();
-          this.operatorProxyContract.init(this.web3.currentProvider, this.config.operator)
-          this.usdtContract
-            .init(this.web3.currentProvider, this.config.usdt)
-            .then(() => {
-              this.balanceOfUsdt(this.accountInfo.userId).then(res => {
-                this.myUSDT = res;
-              });
-            });
-          this.mpNFTContract
-            .init(this.web3.currentProvider, this.config.nft)
-            .then(() => {
-              this.getNFTs();
-            });
+        if (this.account) {
+          this.getData();
         }
       },
       deep: true,
@@ -125,6 +98,18 @@ export default {
   created() {},
   mounted() {},
   methods: {
+    getData() {
+      this.getDraw();
+      this.balanceOfUsdt(this.account).then(res => {
+        this.myUSDT = res;
+      });
+      this.$store.dispatch("user/getGameCenter", {
+        cmd: "getGameCoin",
+        data: {
+          nonce: this.signatureInfo.nonce
+        }
+      });
+    },
     getUsdt(val) {
       this.amount = val;
       this.mp = this.amount / this.diamondsPrice;
@@ -132,9 +117,8 @@ export default {
     // buyMP(40,1);//1mp=0.025usdt
     async buyMP(mp, amount) {
       let that = this;
-      let userInfo = this.accountInfo;
       this.$refs["LoadingModal"].initData();
-      let myUSDT = await this.balanceOfUsdt(userInfo.userId);
+      let myUSDT = await this.balanceOfUsdt(this.account);
       console.log("===myUSDT=====", myUSDT, amount);
 
       if (myUSDT < amount) {
@@ -143,7 +127,7 @@ export default {
         that.$refs["TipModal"].initData("额度不足");
         return;
       }
-      const usdt = await this.usdtContract.allowance(
+      const usdt = await getXWorldService().usdtContract.allowance(
         that.account,
         that.config.shop
       );
@@ -155,8 +139,8 @@ export default {
       // const r = createPurchaseMPRequest(mp, amount);
       purchaseInterfaceApi({
         cmd: "CREATE_PURCHASE_MP_ORDER",
-        requestUserId: that.accountInfo.userId,
-        token: that.accountInfo.token,
+        requestUserId: that.account,
+        token: that.account,
         requestTime: new Date().valueOf(),
         mp: mp,
         amount: amount
@@ -175,7 +159,7 @@ export default {
       });
     },
     async balanceOfUsdt(user) {
-      return this.usdtContract.balanceOfUsdt(user);
+      return getXWorldService().usdtContract.balanceOfUsdt(user);
     },
     async approveUsdt(price) {
       let that = this;
@@ -186,7 +170,7 @@ export default {
         amount: getUsdtPrice(price)
       });
 
-      return await this.usdtContract.approve(
+      return await getXWorldService().usdtContract.approve(
         getUsdtPrice(price),
         config.shop,
         that.account
@@ -196,26 +180,25 @@ export default {
     async MPShopRequestId(rId, amount) {
       let that = this;
       try {
-          const data = await that.goBuyMP(rId, amount, err => {
-            console.log("error:::123:", err);
-          });
-          console.log("data---------", data);
-          console.log("充值成功");
-          that.$refs["LoadingModal"].close();
-          that.$refs["TipModal"].initData("钻石已存入游戏！请进入游戏查看");
-        } catch (err) {
-          let message = "";
-          if (err.code === 4001) {
-            //TODO 用户取消
-            message = "用户取消交易！";
-          } else {
-            message = "交易失败：交易id：" + err.hash;
-          }
-          console.error("buyMP error::::", message);
-          that.$refs["LoadingModal"].close();
-          that.$refs["TipModal"].initData(message);
+        const data = await that.goBuyMP(rId, amount, err => {
+          console.log("error:::123:", err);
+        });
+        console.log("data---------", data);
+        console.log("充值成功");
+        that.$refs["LoadingModal"].close();
+        that.$refs["TipModal"].initData("钻石已存入游戏！请进入游戏查看");
+      } catch (err) {
+        let message = "";
+        if (err.code === 4001) {
+          //TODO 用户取消
+          message = "用户取消交易！";
+        } else {
+          message = "交易失败：交易id：" + err.hash;
         }
-     
+        console.error("buyMP error::::", message);
+        that.$refs["LoadingModal"].close();
+        that.$refs["TipModal"].initData(message);
+      }
     },
     /***
      *
@@ -230,42 +213,34 @@ export default {
     async goBuyMP(requestId, price, callback) {
       let that = this;
       console.log("buyMP:::::", getUsdtPrice(price));
-      await this.operatorProxyContract.recharge(
+      await getXWorldService().operatorProxyContract.recharge(
         requestId,
         0,
-          "0x0000000000000000000000000000000000000000000000000000000000000000",
-          "0x0000000000000000000000000000000000000000000000000000000000000000",
-          "0x0000000000000000000000000000000000000000",
-          0,
-          this.account
+        "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "0x0000000000000000000000000000000000000000",
+        0,
+        this.account
       );
     },
     getDraw() {
-      drawInterfaceApi({
-        cmd: "GET_GAME_DRAW_STATUS",
-        requestUserId: this.accountInfo.userId,
-        token: this.accountInfo.token,
-        requestTime: new Date().valueOf()
-      })
+      userGameApi(
+        {
+          userId: this.account
+        },
+        "getStatus"
+      )
         .then(response => {
-          if (response.code == 1) {
-            this.status = response.status;
+          if (response.code == 0) {
+            this.status = response.data.gameStatus;
           } else {
-            Toast(response.errorMessage);
+            this.$toast(response.message);
           }
         })
         .catch(error => {});
     },
     handleRule() {
       this.$refs["Rule"].init();
-    },
-    getNFTs() {
-      this.mpNFTContract.getNFTs(this.account).then(res => {
-        console.log("res", res);
-        if (res && res.length) {
-          this.nftList = res;
-        }
-      });
     }
   }
 };
