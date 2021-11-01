@@ -10,24 +10,6 @@ export class DiamondNFTContract {
     ccc.setProvider(provider);
     this.contract = await ccc.at(tokenAddress);
   }
-  //购买钻石卡nft
-  async buyDiamondNft(tokenid, amount, v, r, s, invitation, blockNumber, account, callback) {
-    return new Promise((resolve, reject) => {
-      let txHash = "";
-      this.contract.buy(tokenid, amount, v, r, s, invitation, blockNumber, {
-        from:
-          account
-      }).on('transactionHash', function (hash) {
-        txHash = hash;
-      }).on('receipt', function (receipt) {
-        resolve(txHash)
-      }).on('error', function (error) {
-        reject(error);
-      }).catch(error => {
-        reject(error);
-      });
-    });
-  }
   //充值购买游戏内钻石
   async recharge(tokenid, amount, v, r, s, invitation, blockNumber, account, callback) {
     return new Promise((resolve, reject) => {
