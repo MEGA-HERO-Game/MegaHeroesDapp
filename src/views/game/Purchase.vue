@@ -256,11 +256,14 @@ export default {
     async goBuyMP(requestId, price, callback) {
       let that = this;
       console.log("buyMP:::::", getUsdtPrice(price));
-      await this.operatorProxyContract.buyMP(
+      await this.operatorProxyContract.recharge(
         requestId,
-        getUsdtPrice(price),
-        that.account,
-        callback
+        0,
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "0x0000000000000000000000000000000000000000",
+          0,
+          this.account
       );
     },
     getDraw() {
