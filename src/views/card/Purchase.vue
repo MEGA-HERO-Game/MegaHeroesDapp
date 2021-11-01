@@ -84,7 +84,7 @@ export default {
       receivedOption,
       receivedShow: false,
       num: 1,
-
+      diamondNFTContract: new DiamondNFTContract(),
       operatorProxyContract: new OperatorProxyContract(),
       usdtContract: new UsdtContract(),
       config: getConfig(),
