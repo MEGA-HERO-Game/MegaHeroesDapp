@@ -27,33 +27,28 @@ import LoadingModal from "@/components/Loading";
 import TipModal from "@/components/TipModal";
 import { mapGetters } from "vuex";
 import { diamondsOption, diamondsPrice, receivedOption } from "@/utils/status";
-import { DiamondNFTContract } from "@/xworldjs/diamond_NFT";
 import { getConfig, getUsdtPrice } from "@/config";
 import { Toast } from "vant";
+import { getXWorldService } from "@/xworldjs/xworldjs";
 export default {
   name: "PledgeForm",
   components: { LoadingModal, TipModal },
   computed: {
-    ...mapGetters(["accountInfo", "account", "web3"])
+    ...mapGetters(["account", "web3"])
   },
   data() {
     return {
       amount: null,
       config: getConfig(),
-      diamondNFTContract: new DiamondNFTContract(),
       tokenid: 500, //写死 id  目前就一档
       nftbalance: 0 //获取用户钻石卡余额
     };
   },
   watch: {
-    accountInfo: {
+    account: {
       handler: function(val, oldVal) {
-        if (
-          this.accountInfo &&
-          this.accountInfo.userId &&
-          this.accountInfo.token
-        ) {
-          this.initData();
+        if (this.account) {
+          this.getData();
         }
       },
       deep: true,
@@ -63,17 +58,10 @@ export default {
   created() {},
   mounted() {},
   methods: {
-    async initData() {
-      await this.diamondNFTContract.init(
-        this.web3.currentProvider,
-        this.config.diamondcard
-      );
-      this.getData();
-    },
     async getData() {
       // 获取用户钻石卡余额
-      this.diamondNFTContract
-        .balanceOf(this.account, this.tokenid)
+      getXWorldService()
+        .diamondNFTContract.balanceOf(this.account, this.tokenid)
         .then(res => {
           this.nftbalance = res.toNumber();
           console.log("nftbalance", this.nftbalance);
@@ -89,8 +77,8 @@ export default {
         return;
       }
       this.$refs["LoadingModal"].initData();
-      this.diamondNFTContract
-        .safeTransferFrom(
+      getXWorldService()
+        .diamondNFTContract.safeTransferFrom(
           this.account,
           this.config.diamondcardpool,
           this.tokenid,
@@ -127,11 +115,11 @@ export default {
     }
     .content {
       padding: 0 40px;
-      .name{
+      .name {
         font-size: 28px;
         font-family: PingFang SC;
         font-weight: 500;
-        color: #56412E;
+        color: #56412e;
       }
       .formCon {
         margin-top: 16px;

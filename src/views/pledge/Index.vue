@@ -68,10 +68,8 @@ import LoadingModal from "@/components/Loading";
 import TipModal from "@/components/TipModal";
 import { mapGetters } from "vuex";
 import { diamondsOption, diamondsPrice, receivedOption } from "@/utils/status";
-import { DiamondNFTContract } from "@/xworldjs/diamond_NFT";
-import { DiamondPoolsContract } from "@/xworldjs/diamond_pools";
-import { UsdtContract } from "@/xworldjs/usdt";
-import { getConfig, getUsdtPrice } from "@/config";
+import { getConfig } from "@/config";
+import { getXWorldService } from "@/xworldjs/xworldjs";
 export default {
   name: "PledgeIndex",
   components: { LoadingModal, TipModal },
@@ -82,9 +80,6 @@ export default {
     return {
       cardInfo: diamondsOption[0],
       diamondsPrice,
-      diamondNFTContract: new DiamondNFTContract(),
-      diamondPoolsContract: new DiamondPoolsContract(),
-      usdtContract: new UsdtContract(),
       config: getConfig(),
 
       poolUSDT: 0, //合约usdt总额
@@ -106,7 +101,7 @@ export default {
     account: {
       handler: function(val, oldVal) {
         if (this.account) {
-          this.initData();
+          this.getData();
         }
       },
       deep: true,
@@ -116,31 +111,17 @@ export default {
   created() {},
   mounted() {},
   methods: {
-    async initData() {
-      await this.usdtContract.init(this.web3.currentProvider, this.config.usdt);
-      await this.diamondNFTContract.init(
-        this.web3.currentProvider,
-        this.config.diamondcard
-      );
-      await this.diamondPoolsContract.init(
-        this.web3.currentProvider,
-        this.config.diamondcardpool
-      );
-      this.getData();
-    },
     async getData() {
       let account = this.account;
-      if (!account) {
-        return;
-      }
+
       // 获取合约usdt总额
-      let poolUSDT = await this.usdtContract.balanceOfUsdt(
+      let poolUSDT = await getXWorldService().usdtContract.balanceOfUsdt(
         this.config.diamondcardpool
       );
       console.log("poolUSDT", poolUSDT);
 
       // 获取已经分出去的，但用户还没领取的usdt总额
-      let poolrewardUSDT = await this.diamondPoolsContract.pendingAllRewards();
+      let poolrewardUSDT = await getXWorldService().diamondPoolsContract.pendingAllRewards();
       console.log("poolrewardUSDT", poolrewardUSDT);
 
       // 当前奖金池剩余总额
@@ -152,7 +133,7 @@ export default {
       this.poolremainUSDT = poolremainUSDT;
 
       // 质押钻石总量
-      let totalamount = await this.diamondPoolsContract.totalAmount();
+      let totalamount = await getXWorldService().diamondPoolsContract.totalAmount();
       console.log("totalamount", totalamount);
       // 质押钻石总价值
       let totalamountValue = totalamount * this.diamondsPrice;
@@ -162,31 +143,35 @@ export default {
       this.totalamountValue = totalamountValue;
 
       // 用户未领取的usdt
-      this.diamondPoolsContract.pendingRewards(account).then(res => {
-        this.userUSDT = res;
-        console.log("userUSDT", this.userUSDT);
-      });
+      getXWorldService()
+        .diamondPoolsContract.pendingRewards(account)
+        .then(res => {
+          this.userUSDT = res;
+          console.log("userUSDT", this.userUSDT);
+        });
 
       // 质押的数据列表
-      this.diamondPoolsContract.getUserDepositList(account).then(res => {
-        console.log("质押的数据列表", res);
-        let _ids = res["_ids"];
-        let _values = res["_values"];
-        let dataList = [];
-        this.totalValue = 0;
-        for (let i = 0; i < _ids.length; i++) {
-          dataList.push({
-            name: _ids[i].toString(),
-            amount: _values[i].toString(),
-            value:
-              parseFloat(_values[i].toString()) *
-              this.cardInfo.val *
-              this.diamondsPrice
-          });
-          this.totalValue += dataList[i].value;
-        }
-        this.dataList = dataList;
-      });
+      getXWorldService()
+        .diamondPoolsContract.getUserDepositList(account)
+        .then(res => {
+          console.log("质押的数据列表", res);
+          let _ids = res["_ids"];
+          let _values = res["_values"];
+          let dataList = [];
+          this.totalValue = 0;
+          for (let i = 0; i < _ids.length; i++) {
+            dataList.push({
+              name: _ids[i].toString(),
+              amount: _values[i].toString(),
+              value:
+                parseFloat(_values[i].toString()) *
+                this.cardInfo.val *
+                this.diamondsPrice
+            });
+            this.totalValue += dataList[i].value;
+          }
+          this.dataList = dataList;
+        });
 
       // 用户质押的总价值   根据用户质押的数据列表计算
       // 设X为获取挖矿合约的usdt余额。 usdt.balanceOf(poolAddress)
@@ -194,7 +179,7 @@ export default {
       // 设Y为已经分出去的，但用户还没领取的usdt。 pool.pendingAllRewards()
       let Y = poolrewardUSDT;
       // 设Z为当前一个区块时间的收益率。 pool.ratePerBlock()
-      let Z = await this.diamondPoolsContract.ratePerBlock();
+      let Z = await getXWorldService().diamondPoolsContract.ratePerBlock();
       // 设C为当前质押钻石总量。 pool.totalAmount()
       let C = totalamount;
       // 设D为钻石的价格。 调用其他中心化接口获取
@@ -208,8 +193,8 @@ export default {
     claim() {
       // 领取
       this.$refs["LoadingModal"].initData();
-      this.diamondPoolsContract
-        .claim(this.account)
+      getXWorldService()
+        .diamondPoolsContract.claim(this.account)
         .then(data => {
           // success
           this.$refs["LoadingModal"].close();

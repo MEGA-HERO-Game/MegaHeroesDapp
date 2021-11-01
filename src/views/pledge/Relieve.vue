@@ -26,15 +26,15 @@
 import LoadingModal from "@/components/Loading";
 import TipModal from "@/components/TipModal";
 import { mapGetters } from "vuex";
-import { DiamondPoolsContract } from "@/xworldjs/diamond_pools";
-import { getConfig, getUsdtPrice } from "@/config";
+import { getConfig } from "@/config";
 import { diamondsOption, diamondsPrice, receivedOption } from "@/utils/status";
 import { Toast } from "vant";
+import { getXWorldService } from "@/xworldjs/xworldjs";
 export default {
   name: "RelieveForm",
   components: { LoadingModal, TipModal },
   computed: {
-    ...mapGetters(["accountInfo", "account", "web3"])
+    ...mapGetters(["account", "web3"])
   },
   data() {
     return {
@@ -42,20 +42,15 @@ export default {
       diamondsPrice,
       tokenid: 500, //写死 id  目前就一档
       config: getConfig(),
-      diamondPoolsContract: new DiamondPoolsContract(),
       dataList: [],
       num: 0
     };
   },
   watch: {
-    accountInfo: {
+    account: {
       handler: function(val, oldVal) {
-        if (
-          this.accountInfo &&
-          this.accountInfo.userId &&
-          this.accountInfo.token
-        ) {
-          this.initData();
+        if (this.account) {
+          this.getData();
         }
       },
       deep: true,
@@ -65,35 +60,30 @@ export default {
   created() {},
   mounted() {},
   methods: {
-    async initData() {
-      await this.diamondPoolsContract.init(
-        this.web3.currentProvider,
-        this.config.diamondcardpool
-      );
-      this.getData();
-    },
     async getData() {
       // 质押的数据列表
-      this.diamondPoolsContract.getUserDepositList(this.account).then(res => {
-        console.log("质押的数据列表", res);
-        let _ids = res["_ids"];
-        let _values = res["_values"];
-        let dataList = [];
-        for (let i = 0; i < _ids.length; i++) {
-          dataList.push({
-            name: _ids[i].toString(),
-            amount: _values[i].toString(),
-            value:
-              parseFloat(_values[i].toString()) *
-              parseFloat(_values[i].toString()) *
-              this.diamondsPrice
-          });
-          if (_ids[i].toString() == this.tokenid) {
-            this.num = _values[i].toString();
+      getXWorldService()
+        .diamondPoolsContract.getUserDepositList(this.account)
+        .then(res => {
+          console.log("质押的数据列表", res);
+          let _ids = res["_ids"];
+          let _values = res["_values"];
+          let dataList = [];
+          for (let i = 0; i < _ids.length; i++) {
+            dataList.push({
+              name: _ids[i].toString(),
+              amount: _values[i].toString(),
+              value:
+                parseFloat(_values[i].toString()) *
+                parseFloat(_values[i].toString()) *
+                this.diamondsPrice
+            });
+            if (_ids[i].toString() == this.tokenid) {
+              this.num = _values[i].toString();
+            }
           }
-        }
-        this.dataList = dataList;
-      });
+          this.dataList = dataList;
+        });
     },
     withdraw() {
       if (!this.amount || this.amount == 0) {
@@ -105,8 +95,8 @@ export default {
         return;
       }
       this.$refs["LoadingModal"].initData();
-      this.diamondPoolsContract
-        .withdraw(this.tokenid, this.amount,this.accountInfo.userId)
+      getXWorldService()
+        .diamondPoolsContract.withdraw(this.tokenid, this.amount, this.account)
         .then(data => {
           // success
           this.$refs["LoadingModal"].close();
@@ -138,11 +128,11 @@ export default {
     }
     .content {
       padding: 0 40px;
-      .name{
+      .name {
         font-size: 28px;
         font-family: PingFang SC;
         font-weight: 500;
-        color: #56412E;
+        color: #56412e;
       }
       .formCon {
         margin-top: 16px;
