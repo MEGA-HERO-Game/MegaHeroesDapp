@@ -32,6 +32,14 @@ module.exports = {
           "^/api": "",
         }
       },
+      '/baseapi': {
+        target: 'http://web.test.xworld.pro:28080',
+        changeOrigin: true,
+        ws: true,
+        pathRewrite: {
+          "^/baseapi": "",
+        }
+      },
     }
   },
 

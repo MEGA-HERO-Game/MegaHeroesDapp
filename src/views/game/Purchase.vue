@@ -93,6 +93,15 @@ export default {
       },
       deep: true,
       immediate: true
+    },
+    signatureInfo: {
+      handler: function(val, oldVal) {
+        if (this.signatureInfo.nonce) {
+          this.$store.dispatch("user/getGameCoin");
+        }
+      },
+      deep: true,
+      immediate: true
     }
   },
   created() {},
@@ -102,12 +111,6 @@ export default {
       this.getDraw();
       this.balanceOfUsdt(this.account).then(res => {
         this.myUSDT = res;
-      });
-      this.$store.dispatch("user/getGameCenter", {
-        cmd: "getGameCoin",
-        data: {
-          nonce: this.signatureInfo.nonce
-        }
       });
     },
     getUsdt(val) {

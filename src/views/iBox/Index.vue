@@ -27,16 +27,12 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["accountInfo", "account", "web3"])
+    ...mapGetters(["account", "web3"])
   },
   watch: {
-    accountInfo: {
+    account: {
       handler: function(val, oldVal) {
-        if (
-          this.accountInfo &&
-          this.accountInfo.userId &&
-          this.accountInfo.token
-        ) {
+        if (this.account) {
           this.getData();
         }
       },

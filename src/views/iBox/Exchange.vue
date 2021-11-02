@@ -62,7 +62,7 @@
         </div>
       </div>
     </div>
-    <div class="footBtn text-center">立即兑换</div>
+    <div class="footBtn text-center" @click="exchangeFun">立即兑换</div>
     <div class="tip text-center">手续费：<span>0（限时优惠）</span></div>
     <!--  -->
     <SelectAsset ref="SelectAsset" />
@@ -72,8 +72,10 @@
 <script>
 import { mapGetters } from "vuex";
 import { getXWorldService } from "@/xworldjs/xworldjs";
-import { metadataApi } from "@/api/user";
+import { metadataApi, centerApi } from "@/api/user";
 import SelectAsset from "@/components/SelectAsset";
+import { add } from "@/utils/bignumber";
+import AES from "@/utils/AES.js";
 export default {
   name: "IBoxExchange",
   components: { SelectAsset },
@@ -81,11 +83,12 @@ export default {
   data() {
     return {
       tokenId: null,
-      iboxInfo: {}
+      iboxInfo: {},
+      assetCount: 1
     };
   },
   computed: {
-    ...mapGetters(["accountInfo", "account", "web3"])
+    ...mapGetters(["account", "web3", "signatureInfo"])
   },
   created() {
     this.tokenId = this.$route.query.id;
@@ -109,6 +112,52 @@ export default {
     },
     chooseList() {
       this.$refs["SelectAsset"].initData();
+    },
+    exchangeFun() {
+      this.$store
+        .dispatch("user/userLoginFun", {
+          cmd: "getNonce",
+          data: {
+            address: this.account
+          }
+        })
+        .then(response => {
+          this.exchangeBox();
+        })
+        .catch(error => {});
+    },
+    async exchangeBox() {
+      let nonceNum = this.signatureInfo.nonceNum;
+
+      let web3Sign = await this.web3.eth.personal.sign(
+        add(nonceNum, 1),
+        this.account
+      );
+      let nonce = AES.encrypt(this.account + " " + web3Sign);
+
+      let sign = AES.signSecret({
+        iboxAssetId: this.tokenId,
+        assetCount: this.assetCount,
+        nonce: nonce,
+        cmd: "getTextractIBoxAsset"
+      });
+      centerApi(
+        {
+          iboxAssetId: this.tokenId,
+          assetCount: this.assetCount,
+          code: this.code,
+          nonce: nonce,
+          sign: sign
+        },
+        "getTextractIBoxAsset"
+      )
+        .then(response => {
+          if (response.code == 0) {
+          } else {
+            this.$toast(response.message);
+          }
+        })
+        .catch(error => {});
     }
   }
 };

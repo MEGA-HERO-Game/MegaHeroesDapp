@@ -1,10 +1,12 @@
 import request from '@/utils/request'
+import { baseUrl, apiUrl } from '@/utils/env'
 import Qs from 'qs'
 /**
  *  获取nonce并返回该钱包是否已经是注册账户
  */
 export function userLoginApi(data, cmd) {
     return request({
+        baseURL: baseUrl,
         url: `/userLogin?cmd=${cmd}`,
         method: 'post',
         data: Qs.stringify(data)
@@ -16,6 +18,7 @@ export function userLoginApi(data, cmd) {
  */
 export function centerApi(data, cmd) {
     return request({
+        baseURL: baseUrl,
         url: `/center?cmd=${cmd}`,
         method: 'post',
         data: Qs.stringify(data)
@@ -27,9 +30,21 @@ export function centerApi(data, cmd) {
  */
 export function userGameApi(data, cmd) {
     return request({
+        baseURL: baseUrl,
         url: `/userGame?${Qs.stringify(data)}&cmd=${cmd}`,
         method: 'get',
         // data: Qs.stringify(data)
+    })
+}
+
+/**
+ *  获取游戏metadata
+ */
+export function metadataApi(data) {
+    return request({
+        baseURL: apiUrl,
+        url: `/megaheroes/metadata/get?tokenId=${data.tokenId}&assetType=${data.assetType}`,
+        method: 'get'
     })
 }
 
@@ -73,15 +88,5 @@ export function assetInterfaceApi(data) {
         url: '/mh_official/asset/interface',
         method: 'post',
         data: data
-    })
-}
-
-/**
- *  获取游戏metadata
- */
-export function metadataApi(data) {
-    return request({
-        url: `/megaheroes/metadata/get?tokenId=${data.tokenId}&assetType=${data.assetType}`,
-        method: 'get'
     })
 }

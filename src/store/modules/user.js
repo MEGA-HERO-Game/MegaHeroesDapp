@@ -9,6 +9,8 @@ const state = {
   accountInfo: {}, //用户信息
   signatureInfo: {}, //签名信息
   gamecoin: 0, //获取游戏内钻石数量
+  depositRateGratuity: 0, //存入手续费
+  drawRateGratuity: 0, //提取手续费
 }
 
 const mutations = {
@@ -23,6 +25,12 @@ const mutations = {
   },
   SET_GAME_COIN: (state, gamecoin) => {
     state.gamecoin = gamecoin
+  },
+  SET_DEPOSIT_RATE: (state, depositRateGratuity) => {
+    state.depositRateGratuity = depositRateGratuity
+  },
+  SET_DRAW_RATE: (state, drawRateGratuity) => {
+    state.drawRateGratuity = drawRateGratuity
   },
 }
 
@@ -93,12 +101,9 @@ const actions = {
             router.push({ name: 'Profile' })
           } else if (response && response.code == 1) {
             dispatch('userInfoFun')
-            dispatch('getGameCenter', {
-              cmd: "getGameCoin",
-              data: {
-                nonce: response.nonce
-              }
-            })
+            dispatch('getGameCoin')
+            dispatch('getDepositRate')
+            dispatch('getDrawRate')
           }
           resolve()
         } else {
@@ -111,11 +116,54 @@ const actions = {
       })
     })
   },
-  getGameCenter({ commit, state }, info) {
+  // 获取游戏内钻石数量
+  getGameCoin({ commit, state }, info) {
     return new Promise((resolve, reject) => {
-      centerApi(info.data, info.cmd).then(response => {
+      centerApi({ nonce: state.signatureInfo.nonce }, "getGameCoin").then(response => {
         if (response.code == 0) {
           commit('SET_GAME_COIN', response.data.gamecoin);
+          resolve(response)
+        } else {
+          Toast(response.message);
+          reject(response.message)
+        }
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+  // 存入手续费
+  getDepositRate({ commit, state }, info) {
+    return new Promise((resolve, reject) => {
+      centerApi({
+        nonce: state.signatureInfo.nonce, sign: AES.signSecret({
+          nonce: state.signatureInfo.nonce,
+          cmd: "depositRate"
+        })
+      }, "depositRate").then(response => {
+        if (response.code == 0) {
+          commit('SET_DEPOSIT_RATE', response.data.gratuity);
+          resolve(response)
+        } else {
+          Toast(response.message);
+          reject(response.message)
+        }
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+  // 提取手续费
+  getDrawRate({ commit, state }, info) {
+    return new Promise((resolve, reject) => {
+      centerApi({
+        nonce: state.signatureInfo.nonce, sign: AES.signSecret({
+          nonce: state.signatureInfo.nonce,
+          cmd: "drawRate"
+        })
+      }, "drawRate").then(response => {
+        if (response.code == 0) {
+          commit('SET_DRAW_RATE', response.data.gratuity);
           resolve(response)
         } else {
           Toast(response.message);

@@ -5,7 +5,7 @@ import { baseUrl } from '@/utils/env'
 
 // create an axios instance
 const service = axios.create({
-  baseURL: baseUrl
+  baseURL: null
 })
 
 let stop = false

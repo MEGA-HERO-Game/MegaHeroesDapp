@@ -89,18 +89,21 @@ export default {
       },
       deep: true,
       immediate: true
+    },
+    signatureInfo: {
+      handler: function(val, oldVal) {
+        if (this.signatureInfo.nonce) {
+          this.$store.dispatch("user/getGameCoin");
+        }
+      },
+      deep: true,
+      immediate: true
     }
   },
   created() {},
   mounted() {},
   methods: {
     getData() {
-      this.$store.dispatch("user/getGameCenter", {
-        cmd: "getGameCoin",
-        data: {
-          nonce: this.signatureInfo.nonce
-        }
-      });
       getXWorldService()
         .diamondNFTContract.balanceOf(this.account, this.tokenid)
         .then(res => {
