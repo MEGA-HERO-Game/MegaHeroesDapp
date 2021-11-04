@@ -149,7 +149,7 @@ export default {
         amount: amount
       }).then(data => {
         if (data.code === 1) {
-          console.log("充值成功");
+          console.log("获取订单号成功");
           that.MPShopRequestId(data.requestId, amount);
 
         } else {
