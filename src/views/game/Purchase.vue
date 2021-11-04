@@ -150,10 +150,8 @@ export default {
       }).then(data => {
         if (data.code === 1) {
           console.log("充值成功");
+          that.MPShopRequestId(data.requestId, amount);
 
-          that.mpTimer = setInterval(() => {
-            that.MPShopRequestId(data.requestId, amount);
-          }, 2000);
         } else {
           that.$refs["LoadingModal"].close();
           console.error(data.code, ":", data.errorMessage);
