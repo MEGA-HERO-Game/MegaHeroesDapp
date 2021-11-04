@@ -98,6 +98,7 @@ export default {
       handler: function(val, oldVal) {
         if (this.signatureInfo.nonce) {
           this.$store.dispatch("user/getGameCoin");
+          this.getDraw();
         }
       },
       deep: true,
@@ -108,7 +109,6 @@ export default {
   mounted() {},
   methods: {
     getData() {
-      this.getDraw();
       this.balanceOfUsdt(this.account).then(res => {
         this.myUSDT = res;
       });
@@ -228,7 +228,7 @@ export default {
     getDraw() {
       userGameApi(
         {
-          userId: this.account
+          nonce: this.signatureInfo.nonce
         },
         "getStatus"
       )

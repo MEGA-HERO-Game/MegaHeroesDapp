@@ -29,6 +29,7 @@ export default {
       this.show = true;
     },
     close() {
+      this.$emit("confirmFun");
       this.show = false;
     }
   }

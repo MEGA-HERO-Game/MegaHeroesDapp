@@ -31,9 +31,9 @@ export function centerApi(data, cmd) {
 export function userGameApi(data, cmd) {
     return request({
         baseURL: baseUrl,
-        url: `/userGame?${Qs.stringify(data)}&cmd=${cmd}`,
-        method: 'get',
-        // data: Qs.stringify(data)
+        url: `/userGame?cmd=${cmd}`,
+        method: 'post',
+        data: Qs.stringify(data)
     })
 }
 

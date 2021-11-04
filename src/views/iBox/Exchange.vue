@@ -8,10 +8,10 @@
       <div class="info mh-flex-1">
         <div class="mh-flex mh-vertical-center mh-align-between">
           <div class="name fontColor">{{iboxInfo.name}}</div>
-          <div class="choose fontColor mh-center" @click="chooseList">
+          <!-- <div class="choose fontColor mh-center" @click="chooseList">
             选择资产
             <img class="bottom_allow" src="@/assets/common/bottom_allow.png" alt="">
-          </div>
+          </div> -->
         </div>
         <div class="num">数量1</div>
       </div>
@@ -21,51 +21,53 @@
     </div>
     <div class="title">到Mega Hero游戏</div>
     <div class="section mh-center mh-line-feed">
-      <div class="box container mh-flex mh-vertical-center">
+      <div class="box container mh-flex mh-vertical-center" v-if="exchangeInfo.spirit">
         <div class="imgCon">
           <img :src="iboxInfo.pic" alt="">
         </div>
         <div class="info mh-flex-1">
           <div>
-            <div class="name fontColor">{{iboxInfo.name}}</div>
+            <div class="name fontColor">{{exchangeInfo.spirit.name}}</div>
           </div>
           <div class="num">数量1</div>
         </div>
       </div>
-      <img class="plus_icon" src="@/assets/common/plus_icon.png" alt="">
-      <div class="box container mh-flex mh-vertical-center">
-        <div class="head_name">6星极品英雄任选</div>
+      <img v-if="exchangeInfo.spirit && (exchangeInfo.gods.length || exchangeInfo.diamondCard != 0)" class="plus_icon" src="@/assets/common/plus_icon.png" alt="">
+      <div class="box container mh-flex mh-vertical-center" v-if="exchangeInfo.gods.length">
+        <div class="head_name" v-if="exchangeInfo.godsStar">{{exchangeInfo.godsStar}}星极品英雄任选</div>
         <div class="imgCon">
           <img src="@/assets/common/question_icon.png" alt="">
         </div>
         <div class="info mh-flex-1">
           <div class="mh-flex mh-vertical-center mh-align-between">
-            <div class="choose fontColor mh-center">
-              神灵
+            <div class="choose fontColor mh-center" @click="chooseList">
+              <div class="line1">{{spiritInfo.tokenId?spiritInfo.name:'神灵'}}</div>
               <img class="bottom_allow" src="@/assets/common/bottom_allow.png" alt="">
             </div>
           </div>
           <div class="num">数量1</div>
         </div>
       </div>
-      <img class="plus_icon" src="@/assets/common/plus_icon.png" alt="">
-      <div class="box container mh-flex mh-vertical-center">
+      <img v-if="exchangeInfo.gods.length && exchangeInfo.diamondCard != 0" class="plus_icon" src="@/assets/common/plus_icon.png" alt="">
+      <div class="box container mh-flex mh-vertical-center" v-if="exchangeInfo.diamondCard != 0">
         <div class="head_name">价值500钻石</div>
         <div class="imgCon">
           <img src="@/assets/common/card.png" alt="">
         </div>
         <div class="info mh-flex-1">
           <div>
-            <div class="name fontColor">Luna</div>
+            <div class="name fontColor">钻石卡</div>
           </div>
-          <div class="num">数量1</div>
+          <div class="num">数量{{exchangeInfo.diamondCard}}</div>
         </div>
       </div>
     </div>
     <div class="footBtn text-center" @click="exchangeFun">立即兑换</div>
     <div class="tip text-center">手续费：<span>0（限时优惠）</span></div>
     <!--  -->
-    <SelectAsset ref="SelectAsset" />
+    <SelectAsset @chooseInfo="chooseInfo" ref="SelectAsset" />
+    <LoadingModal ref="LoadingModal" />
+    <TipModal @confirmFun="confirmFun" ref="TipModal" />
   </div>
 </template>
 
@@ -74,17 +76,23 @@ import { mapGetters } from "vuex";
 import { getXWorldService } from "@/xworldjs/xworldjs";
 import { metadataApi, centerApi } from "@/api/user";
 import SelectAsset from "@/components/SelectAsset";
+import LoadingModal from "@/components/Loading";
+import TipModal from "@/components/TipModal";
 import { add } from "@/utils/bignumber";
 import AES from "@/utils/AES.js";
+import { assetsOption } from "@/utils/status";
 export default {
   name: "IBoxExchange",
-  components: { SelectAsset },
+  components: { SelectAsset, LoadingModal, TipModal },
   computed: {},
   data() {
     return {
       tokenId: null,
       iboxInfo: {},
-      assetCount: 1
+      assetCount: 1,
+      exchangeInfo: {},
+      spiritInfo: {},
+      isSuccess: false
     };
   },
   computed: {
@@ -93,9 +101,15 @@ export default {
   created() {
     this.tokenId = this.$route.query.id;
     this.getData();
+    this.getExchangeInfo();
   },
   mounted() {},
   methods: {
+    getExchangeInfo() {
+      this.exchangeInfo = assetsOption.find(item => {
+        return item.tokenId.includes(this.tokenId);
+      });
+    },
     getData() {
       metadataApi({
         tokenId: this.tokenId,
@@ -111,20 +125,55 @@ export default {
         .catch(error => {});
     },
     chooseList() {
-      this.$refs["SelectAsset"].initData();
+      this.$refs["SelectAsset"].initData(this.exchangeInfo.gods);
+    },
+    chooseInfo(info) {
+      this.spiritInfo = info;
     },
     exchangeFun() {
-      this.$store
-        .dispatch("user/userLoginFun", {
-          cmd: "getNonce",
-          data: {
-            address: this.account
-          }
+      if (this.exchangeInfo.gods.length && !this.spiritInfo.tokenId) {
+        this.$toast("请选择神灵");
+        return;
+      }
+      let mpType = [];
+      if (this.exchangeInfo.spirit && this.exchangeInfo.spirit.tokenId) {
+        mpType.push(this.exchangeInfo.spirit.tokenId);
+      }
+      if (this.spiritInfo && this.spiritInfo.tokenId) {
+        mpType.push(this.spiritInfo.tokenId);
+      }
+      this.$refs["LoadingModal"].initData();
+      getXWorldService()
+        .operatorProxyContract.exchangeIbox(this.tokenId, mpType, this.account)
+        .then(data => {
+          // success
+          this.$refs["LoadingModal"].close();
+          this.isSuccess = true;
+          this.$refs["TipModal"].initData("兑换成功");
         })
-        .then(response => {
-          this.exchangeBox();
-        })
-        .catch(error => {});
+        .catch(error => {
+          console.log("error", error);
+          // Failure
+          this.$refs["LoadingModal"].close();
+          this.isSuccess = false;
+          this.$refs["TipModal"].initData("交易失败");
+        });
+      // this.$store
+      //   .dispatch("user/userLoginFun", {
+      //     cmd: "getNonce",
+      //     data: {
+      //       address: this.account
+      //     }
+      //   })
+      //   .then(response => {
+      //     this.exchangeBox();
+      //   })
+      //   .catch(error => {});
+    },
+    confirmFun() {
+      if (this.isSuccess) {
+        this.$router.go(-1);
+      }
     },
     async exchangeBox() {
       let nonceNum = this.signatureInfo.nonceNum;
@@ -276,6 +325,15 @@ export default {
     span {
       color: #d60019;
     }
+  }
+  .line1 {
+    word-wrap: break-word;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowarp;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
   }
 }
 </style>

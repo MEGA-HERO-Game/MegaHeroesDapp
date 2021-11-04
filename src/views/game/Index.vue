@@ -46,7 +46,7 @@ export default {
   name: "GameIndex",
   components: { Rule },
   computed: {
-    ...mapGetters(["account"])
+    ...mapGetters(["account", "signatureInfo"])
   },
   data() {
     return {
@@ -54,9 +54,9 @@ export default {
     };
   },
   watch: {
-    account: {
+    signatureInfo: {
       handler: function(val, oldVal) {
-        if (this.account) {
+        if (this.signatureInfo.nonce) {
           this.getDraw();
         }
       },
@@ -76,7 +76,7 @@ export default {
     getDraw() {
       userGameApi(
         {
-          userId: this.account
+          nonce: this.signatureInfo.nonce
         },
         "getStatus"
       )

@@ -5,16 +5,16 @@
       <div class="title">选择资产</div>
       <div class="mh-flex mh-vertical-center search-con">
         <img class="search_icon" src="@/assets/common/search_icon.png" alt="">
-        <van-field class="search_input" v-model="text" label="" />
+        <van-field class="search_input" v-model="searchValue" label="" />
       </div>
       <div class="assetList">
-        <div class="assetItem mh-flex mh-vertical-center" v-for="(item, index) in list" :key="index">
+        <div class="assetItem mh-flex mh-vertical-center" @click="chooseItem(item)" v-for="(item, index) in list" :key="index">
           <div class="assetImg">
             <img src="@/assets/knapsack/img_2.png" alt="">
           </div>
           <div class="assetInfo mh-flex-1">
-            <div class="assetName">修谱诺斯</div>
-            <div class="assetIntro">阵营、职业、四维</div>
+            <div class="assetName">{{item.name}}</div>
+            <!-- <div class="assetIntro">阵营、职业、四维</div> -->
           </div>
         </div>
       </div>
@@ -25,25 +25,33 @@
 <script>
 export default {
   name: "SelectAsset",
-  props: {
-    text: {
-      type: String,
-      default: ""
-    }
-  },
   data() {
     return {
       show: false,
-      list: 3
+      searchValue: "",
+      list: [],
+      list2: []
     };
   },
+  watch: {
+    searchValue: function(newV, oldV) {
+      this.list = newV ? this.filterData(this.list2, newV) : this.list2;
+    }
+  },
   methods: {
-    initData() {
+    initData(list) {
+      this.list = list;
+      this.list2 = JSON.parse(JSON.stringify(list));
       this.show = true;
     },
-    toggleCard(item) {
-      // this.$emit("getCard", item);
-      // this.close();
+    filterData(ary, val = "") {
+      return ary.filter(element => {
+        return element.name.search(val) >= 0 ? true : false;
+      });
+    },
+    chooseItem(item) {
+      this.$emit("chooseInfo", item);
+      this.close();
     },
     close() {
       this.show = false;
@@ -92,6 +100,7 @@ export default {
     }
   }
   .assetList {
+    min-height: 600px;
     max-height: 600px;
     margin-top: 30px;
     overflow: auto;
