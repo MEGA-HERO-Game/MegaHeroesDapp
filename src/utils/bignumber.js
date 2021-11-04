@@ -15,3 +15,7 @@ export function add(numberOne, numberTwo) {
 export function subtract(numberOne, numberTwo) {
   return new BigNumber(`${numberOne}`).minus(new BigNumber(`${numberTwo}`)).toString();
 }
+
+export function convertStringToNumber(value) {
+  return new BigNumber(`${value}`).toNumber();
+}

@@ -81,6 +81,7 @@ import TipModal from "@/components/TipModal";
 import { add } from "@/utils/bignumber";
 import AES from "@/utils/AES.js";
 import { assetsOption } from "@/utils/status";
+import { convertStringToNumber } from "@/utils/bignumber";
 export default {
   name: "IBoxExchange",
   components: { SelectAsset, LoadingModal, TipModal },
@@ -137,10 +138,10 @@ export default {
       }
       let mpType = [];
       if (this.exchangeInfo.spirit && this.exchangeInfo.spirit.tokenId) {
-        mpType.push(this.exchangeInfo.spirit.tokenId);
+        mpType.push(convertStringToNumber(this.exchangeInfo.spirit.tokenId));
       }
       if (this.spiritInfo && this.spiritInfo.tokenId) {
-        mpType.push(this.spiritInfo.tokenId);
+        mpType.push(convertStringToNumber(this.spiritInfo.tokenId));
       }
       this.$refs["LoadingModal"].initData();
       getXWorldService()
