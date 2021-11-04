@@ -213,11 +213,12 @@ export default {
      * @returns {Promise<void>}
      *
      */
-    async goBuyMP(requestId, price, callback) {
+    async goBuyMP(requestId, amount, callback) {
       let that = this;
       console.log("buyMP:::::", getUsdtPrice(price));
       await getXWorldService().operatorProxyContract.recharge(
         requestId,
+        amount,
         0,
         "0x0000000000000000000000000000000000000000000000000000000000000000",
         "0x0000000000000000000000000000000000000000000000000000000000000000",
