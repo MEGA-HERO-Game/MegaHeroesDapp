@@ -181,14 +181,7 @@ export default {
       }
     },
      async approvalForAll(account,operator) {
-      let that = this;
-      const config = getConfig();
-      console.log("approveUsdt:::", {
-        to: config.shop,
-        amount: getUsdtPrice(price)
-      });
       return await getXWorldService().iboxTokenContract.setApprovalForAll(account,operator)
-      // return await this.usdtContract.approveUsdt(price, config.operator, account)
     },
     async exchangeBox() {
       let nonceNum = this.signatureInfo.nonceNum;
