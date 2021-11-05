@@ -29,11 +29,11 @@ export class IboxTokenContract {
     return t;
   }
 
-  async setApprovalForAll(operator,approved,from) {
-    const approved = await this.contract.isApprovedForAll(from,operator)
+  async setApprovalForAll(owner,operator) {
+    const approved = await this.contract.isApprovedForAll(owner,operator)
     console.log('isApprovedForAll:::', approved)
     if (!approved) {
-      await this.contract.setApprovalForAll(operator, approved, { from: from })
+      await this.contract.setApprovalForAll(operator, true, { from: owner })
     }
   }
   
