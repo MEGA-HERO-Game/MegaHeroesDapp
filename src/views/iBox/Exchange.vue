@@ -146,13 +146,14 @@ export default {
         mpType.push(convertStringToNumber(this.spiritInfo.tokenId));
       }
       this.$refs["LoadingModal"].initData();
-      try {
-           await getXWorldService().iboxTokenContract.setApprovalForAll(this.account,this.config.operator);
-        } catch (err) {
+      getXWorldService().iboxTokenContract.setApprovalForAll(this.account,this.config.operator)
+        .then(data => {
+        })
+        .catch(error => {
           console.log("授权失败");
           this.$refs["LoadingModal"].close();
           this.$refs["TipModal"].initData("授权失败");
-        }  
+      });
       getXWorldService()
         .operatorProxyContract.exchangeIbox(this.tokenId, mpType, this.account)
         .then(data => {
