@@ -82,12 +82,14 @@ import { add } from "@/utils/bignumber";
 import AES from "@/utils/AES.js";
 import { assetsOption } from "@/utils/status";
 import { convertStringToNumber } from "@/utils/bignumber";
+import { getConfig} from "@/config";
 export default {
   name: "IBoxExchange",
   components: { SelectAsset, LoadingModal, TipModal },
   computed: {},
   data() {
     return {
+      config: getConfig(),
       tokenId: null,
       iboxInfo: {},
       assetCount: 1,
@@ -145,7 +147,7 @@ export default {
       }
       this.$refs["LoadingModal"].initData();
       try {
-           await getXWorldService().iboxTokenContract.setApprovalForAll(this.account,this.config.diamondcardpool);
+           await getXWorldService().iboxTokenContract.setApprovalForAll(this.account,this.config.operator);
         } catch (err) {
           console.log("授权失败");
           this.$refs["LoadingModal"].close();
