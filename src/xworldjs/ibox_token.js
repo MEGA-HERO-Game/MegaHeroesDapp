@@ -22,6 +22,21 @@ export class IboxTokenContract {
       await this.contract.approve(to, tokenId, { from: from })
     }
   }
+  
+  async isApprovedForAll(owner,operator) {
+    console.log('isApprovedForAll::::', owner,operator)
+    const t = await this.contract.isApprovedForAll(owner,operator)
+    return t;
+  }
+
+  async setApprovalForAll(operator,approved,from) {
+    const approved = await this.contract.isApprovedForAll(from,operator)
+    console.log('isApprovedForAll:::', approved)
+    if (!approved) {
+      await this.contract.setApprovalForAll(operator, approved, { from: from })
+    }
+  }
+  
 
   async getIboxTokenId(user) {
     let balance = await this.contract.balanceOf(user);
