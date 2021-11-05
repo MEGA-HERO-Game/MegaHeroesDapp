@@ -146,14 +146,8 @@ export default {
         mpType.push(convertStringToNumber(this.spiritInfo.tokenId));
       }
       this.$refs["LoadingModal"].initData();
-      getXWorldService().iboxTokenContract.setApprovalForAll(this.account,this.config.operator)
-        .then(data => {
-        })
-        .catch(error => {
-          console.log("授权失败");
-          this.$refs["LoadingModal"].close();
-          this.$refs["TipModal"].initData("授权失败");
-      });
+      await this.approvalForAll(this.account,this.config.operator);
+      
       getXWorldService()
         .operatorProxyContract.exchangeIbox(this.tokenId, mpType, this.account)
         .then(data => {
@@ -185,6 +179,16 @@ export default {
       if (this.isSuccess) {
         this.$router.go(-1);
       }
+    },
+     async approvalForAll(account,operator) {
+      let that = this;
+      const config = getConfig();
+      console.log("approveUsdt:::", {
+        to: config.shop,
+        amount: getUsdtPrice(price)
+      });
+      return await getXWorldService().iboxTokenContract.setApprovalForAll(account,operator)
+      // return await this.usdtContract.approveUsdt(price, config.operator, account)
     },
     async exchangeBox() {
       let nonceNum = this.signatureInfo.nonceNum;
