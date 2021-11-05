@@ -133,7 +133,7 @@ export default {
     chooseInfo(info) {
       this.spiritInfo = info;
     },
-    exchangeFun() {
+    async exchangeFun() {
       if (this.exchangeInfo.gods.length && !this.spiritInfo.tokenId) {
         this.$toast("请选择神灵");
         return;
