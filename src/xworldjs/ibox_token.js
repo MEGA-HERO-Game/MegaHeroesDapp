@@ -3,7 +3,7 @@ import MP_IBOX_TOKEN_ABI from '@/contracts/IBoxToken.json';
 
 export class IboxTokenContract {
   async init(provider, tokenAddress) {
-    const ccc = contract(MP_IBOX_TOKEN_ABI);
+    const ccc = contract({ "abi": MP_IBOX_TOKEN_ABI });
     ccc.setProvider(provider);
     this.tokenAddress = tokenAddress
     this.contract = await ccc.at(tokenAddress);
