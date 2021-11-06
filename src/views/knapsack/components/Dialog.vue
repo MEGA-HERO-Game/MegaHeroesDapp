@@ -88,14 +88,15 @@
 
 <script>
 import { mapGetters } from "vuex";
-import { assetInterfaceApi } from "@/api/user";
+import { centerApi } from "@/api/user";
 import imgPath from "@/views/mixins/imgPath";
+import AES from "@/utils/AES.js";
 export default {
   name: "Dialog",
   mixins: [imgPath],
   props: {},
   computed: {
-    ...mapGetters(["accountInfo", "account", "web3"])
+    ...mapGetters(["account", "web3", "signatureInfo"])
   },
   data() {
     return {
@@ -109,13 +110,15 @@ export default {
       this.getDetail(info.typeId || info.tokenId);
     },
     getDetail(id) {
-      assetInterfaceApi({
-        cmd: "GET_HERO_DETAIL",
-        requestUserId: this.accountInfo.userId,
-        token: this.accountInfo.token,
-        requestTime: new Date().valueOf(),
-        id: id
-      })
+      centerApi({
+        tokenId: id,
+        // nonce: this.signatureInfo.nonce,
+        sign: AES.signSecret({
+          // nonce: this.signatureInfo.nonce,
+          cmd: "assetInfo",
+          tokenId: id,
+        })
+      }, "assetInfo")
         .then(response => {
           if (response.code == 1) {
             this.info = response.info;
