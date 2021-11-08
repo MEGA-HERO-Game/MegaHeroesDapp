@@ -49,4 +49,23 @@ export class IboxTokenContract {
     return result;
   }
 
+  async burn(account, tokenid) {
+    // 销毁
+    return new Promise((resolve, reject) => {
+      let txHash = "";
+      this.contract.burn(tokenid, {
+        from:
+          account
+      }).on('transactionHash', function (hash) {
+        txHash = hash;
+      }).on('receipt', function (receipt) {
+        resolve(txHash)
+      }).on('error', function (error) {
+        reject(error);
+      }).catch(error => {
+        reject(error);
+      });
+    });
+  }
+
 }

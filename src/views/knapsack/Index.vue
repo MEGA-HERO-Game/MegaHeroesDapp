@@ -182,7 +182,7 @@ export default {
     account: {
       handler: function (val, oldVal) {
         if (this.account) {
-          // this.getNftData();
+          this.getNftData();
           this.getIBoxData();
         }
       },

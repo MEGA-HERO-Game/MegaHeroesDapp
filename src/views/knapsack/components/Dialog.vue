@@ -9,7 +9,7 @@
         <div class="info">
           <div class="name">{{info.name}}</div>
           <div class="star mh-center">
-            <img v-for="(item, index) in info.supportLevel" :key="index" src="@/assets/knapsack/icon_10.png" alt="">
+            <img v-for="(item, index) in info.level" :key="index" src="@/assets/knapsack/icon_10.png" alt="">
           </div>
         </div>
         <div class="rightCon">
@@ -107,7 +107,9 @@ export default {
   methods: {
     init(info) {
       this.show = true;
-      this.getDetail(info.typeId || info.tokenId);
+      info.level = parseFloat(info.level);
+      this.info = info;
+      // this.getDetail(info.typeId || info.tokenId);
     },
     getDetail(id) {
       centerApi({

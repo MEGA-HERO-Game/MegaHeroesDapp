@@ -2,23 +2,23 @@
   <div class="knapsackDeposit">
     <div class="box mh-flex mh-vertical-center">
       <div class="imgCon">
-        <img src="@/assets/knapsack/img_2.png" alt="">
+        <img src="@/assets/knapsack/img_2.png" alt="" />
       </div>
       <div class="info mh-flex-1">
         <div class="name mh-flex mh-vertical-center" @click="chooseList">
           <span>Luna</span>
-          <img src="@/assets/common/bottom_allow.png" alt="">
+          <img src="@/assets/common/bottom_allow.png" alt="" />
         </div>
         <div class="num">数量1</div>
       </div>
       <div class="intro">钱包资产</div>
     </div>
     <div class="downCon">
-      <img src="@/assets/diamonds/down_icon.png" alt="">
+      <img src="@/assets/diamonds/down_icon.png" alt="" />
     </div>
     <div class="box mh-flex mh-vertical-center">
       <div class="imgCon">
-        <img src="@/assets/knapsack/img_2.png" alt="">
+        <img src="@/assets/knapsack/img_2.png" alt="" />
       </div>
       <div class="info mh-flex-1">
         <div class="name mh-flex mh-vertical-center">
@@ -28,10 +28,14 @@
       </div>
       <div class="intro">存入Mega Hero</div>
     </div>
-    <div class="tip">手续费：<span>0（限时优惠）</span></div>
-    <div class="foot_btn text-center">立即存入</div>
+    <div class="tip">
+      手续费：<span>{{ depositRateGratuity }}（限时优惠）</span>
+    </div>
+    <div class="foot_btn text-center" @click="submit">立即存入</div>
     <!--  -->
     <SelectAsset ref="SelectAsset" />
+    <LoadingModal ref="LoadingModal" />
+    <TipModal ref="TipModal" />
   </div>
 </template>
 
@@ -40,22 +44,51 @@ import LoadingModal from "@/components/Loading";
 import TipModal from "@/components/TipModal";
 import SelectAsset from "@/components/SelectAsset";
 import { mapGetters } from "vuex";
+import { getXWorldService } from "@/xworldjs/xworldjs";
 export default {
   name: "KnapsackDeposit",
   components: { LoadingModal, TipModal, SelectAsset },
   computed: {
-    ...mapGetters(["accountInfo", "account", "web3"])
+    ...mapGetters(["signatureInfo", "account", "web3", "depositRateGratuity"]),
   },
   data() {
-    return {};
+    return {
+      tokenId: 207000000001,
+    };
   },
   created() {},
   mounted() {},
+  watch: {
+    signatureInfo: {
+      handler: function (val, oldVal) {
+        if (this.signatureInfo.nonce) {
+          this.$store.dispatch("user/getDepositRate");
+        }
+      },
+      deep: true,
+      immediate: true,
+    },
+  },
   methods: {
     chooseList() {
       this.$refs["SelectAsset"].initData();
-    }
-  }
+    },
+    submit() {
+      this.$refs["LoadingModal"].initData();
+      getXWorldService()
+        .mpNFTContract.burn(this.account, this.tokenId)
+        .then((data) => {
+          // success
+          this.$refs["LoadingModal"].close();
+          this.$refs["TipModal"].initData("存入成功");
+        })
+        .catch((error) => {
+          // Failure
+          this.$refs["LoadingModal"].close();
+          this.$refs["TipModal"].initData("交易失败");
+        });
+    },
+  },
 };
 </script>
 <style lang="scss" scoped>
