@@ -288,7 +288,10 @@ export default {
       }
     },
     handleDetail(item) {
-      this.$refs["Dialog"].init(item);
+      this.$refs["Dialog"].init(item, {
+        type: this.type, //1  游戏资产  2 钱包资产
+        isIBox: this.isIBox, // 1 IBOX资产  2Mega Hero资产
+      });
     },
     handleIBox(item) {
       this.$router.push({

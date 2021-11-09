@@ -71,7 +71,8 @@
         {{info.skillIntro1}}<br>
         {{info.skillIntro2}}
       </div>
-      <div class="home-title mh-center">存入</div>
+      <div class="home-title mh-center" v-if="basicInfo.type == 1 && info.assetType != 3" @click="jumpExtract">提取</div>
+      <div class="home-title mh-center" v-if="basicInfo.type == 2">存入</div>
       <div class="footerCon">
         <div class="footerItem mh-center">
           <div class="name mh-flex-1 text-right">Token id</div>
@@ -101,14 +102,16 @@ export default {
   data() {
     return {
       show: false,
+      basicInfo: {},
       info: {}
     };
   },
   methods: {
-    init(info) {
+    init(info, basicInfo) {
       this.show = true;
       info.level = parseFloat(info.level);
       this.info = info;
+      this.basicInfo = basicInfo;
       // this.getDetail(info.typeId || info.tokenId);
     },
     getDetail(id) {
@@ -129,6 +132,14 @@ export default {
           }
         })
         .catch(error => {});
+    },
+    jumpExtract(){
+      this.$router.push({
+        path: "/knapsack/extract",
+        query: {
+          id: this.info.typeId
+        }
+      });
     }
   }
 };

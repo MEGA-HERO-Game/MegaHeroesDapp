@@ -2,12 +2,12 @@
   <div class="knapsackExtract">
     <div class="box mh-flex mh-vertical-center">
       <div class="imgCon">
-        <img src="@/assets/knapsack/img_2.png" alt="" />
+        <img :src="formatHeroImg(info.icon)" alt="" />
       </div>
       <div class="info mh-flex-1">
         <div class="name mh-flex mh-vertical-center" @click="chooseList">
           <span>Luna</span>
-          <img src="@/assets/common/bottom_allow.png" alt="" />
+          <!-- <img src="@/assets/common/bottom_allow.png" alt="" /> -->
         </div>
         <div class="num">数量1</div>
       </div>
@@ -18,7 +18,7 @@
     </div>
     <div class="box mh-flex mh-vertical-center">
       <div class="imgCon">
-        <img src="@/assets/knapsack/img_2.png" alt="" />
+        <img :src="formatHeroImg(info.icon)" alt="" />
       </div>
       <div class="info mh-flex-1">
         <div class="name mh-flex mh-vertical-center">
@@ -41,12 +41,14 @@
 import LoadingModal from "@/components/Loading";
 import TipModal from "@/components/TipModal";
 import SelectAsset from "@/components/SelectAsset";
+import imgPath from "@/views/mixins/imgPath";
 import { mapGetters } from "vuex";
 import { centerApi } from "@/api/user";
 import AES from "@/utils/AES.js";
 import { add } from "@/utils/bignumber";
 export default {
   name: "KnapsackExtract",
+  mixins: [imgPath],
   components: { LoadingModal, TipModal, SelectAsset },
   computed: {
     ...mapGetters(["signatureInfo", "account", "web3", "drawRateGratuity"]),
@@ -54,15 +56,20 @@ export default {
   data() {
     return {
       tokenId: 30506,
+      info: {},
+      typeId: "",
     };
   },
-  created() {},
+  created() {
+    this.typeId = this.$route.query.id;
+  },
   mounted() {},
   watch: {
     signatureInfo: {
       handler: function (val, oldVal) {
         if (this.signatureInfo.nonce) {
           this.$store.dispatch("user/getDrawRate");
+          this.getData();
         }
       },
       deep: true,
@@ -71,7 +78,35 @@ export default {
   },
   methods: {
     chooseList() {
-      this.$refs["SelectAsset"].initData();
+      // this.$refs["SelectAsset"].initData();
+    },
+    getData() {
+      centerApi(
+        {
+          nonce: this.signatureInfo.nonce,
+          sign: AES.signSecret({
+            nonce: this.signatureInfo.nonce,
+            cmd: "getGameAssetList",
+          }),
+        },
+        "getGameAssetList"
+      )
+        .then((response) => {
+          if (response.code == 0) {
+            let gameAsset = [];
+            if (response.data && response.data.gameAsset) {
+              gameAsset = response.data.gameAsset;
+            }
+            let arr = gameAsset.filter((element) => {
+              return element.typeId == this.typeId;
+            });
+            this.info = arr && arr.length ? arr[0] : {};
+            console.log(this.info);
+          } else {
+            this.$toast(response.errorMessage);
+          }
+        })
+        .catch((error) => {});
     },
     async submit() {
       let nonceNum = this.signatureInfo.nonceNum;
@@ -82,7 +117,7 @@ export default {
       let nonce = AES.encrypt(this.account + " " + web3Sign);
 
       let sign = AES.signSecret({
-        gameAssetId: this.tokenId, //游戏内资产id
+        gameAssetId: this.typeId, //游戏内资产id
         assetCount: 1, //数量
         assetType: 2, //资产类型：1、钻石卡；2、神灵；
         nonce: nonce,
@@ -90,7 +125,7 @@ export default {
       });
       centerApi(
         {
-          gameAssetId: this.tokenId, //游戏内资产id
+          gameAssetId: this.typeId, //游戏内资产id
           assetCount: 1, //数量
           assetType: 2, //资产类型：1、钻石卡；2、神灵；
           nonce: nonce,
