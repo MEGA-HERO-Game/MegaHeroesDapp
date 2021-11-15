@@ -2,7 +2,7 @@
   <div class="knapsackExtract">
     <div class="box mh-flex mh-vertical-center">
       <div class="imgCon">
-        <img :src="formatHeroImg(info.icon)" alt="" />
+        <img v-if="info.icon" :src="formatHeroImg(info.icon)" alt="" />
       </div>
       <div class="info mh-flex-1">
         <div class="name mh-flex mh-vertical-center" @click="chooseList">
@@ -18,7 +18,7 @@
     </div>
     <div class="box mh-flex mh-vertical-center">
       <div class="imgCon">
-        <img :src="formatHeroImg(info.icon)" alt="" />
+        <img v-if="info.icon" :src="formatHeroImg(info.icon)" alt="" />
       </div>
       <div class="info mh-flex-1">
         <div class="name mh-flex mh-vertical-center">
@@ -84,8 +84,10 @@ export default {
       centerApi(
         {
           nonce: this.signatureInfo.nonce,
+          account: this.account,
           sign: AES.signSecret({
             nonce: this.signatureInfo.nonce,
+            account: this.account,
             cmd: "getGameAssetList",
           }),
         },
@@ -94,11 +96,14 @@ export default {
         .then((response) => {
           if (response.code == 0) {
             let gameAsset = [];
-            if (response.data && response.data.gameAsset) {
-              gameAsset = response.data.gameAsset;
+            // if (response.data && response.data.gameAsset) {
+            //   gameAsset = response.data.gameAsset;
+            // }
+            if (response.gameAsset) {
+              gameAsset = response.gameAsset;
             }
             let arr = gameAsset.filter((element) => {
-              return element.typeId == this.typeId;
+              return element.tokenId == this.typeId;
             });
             this.info = arr && arr.length ? arr[0] : {};
             console.log(this.info);

@@ -119,9 +119,15 @@ const actions = {
   // 获取游戏内钻石数量
   getGameCoin({ commit, state }, info) {
     return new Promise((resolve, reject) => {
-      centerApi({ nonce: state.signatureInfo.nonce }, "getGameCoin").then(response => {
+      centerApi({
+        nonce: state.signatureInfo.nonce, account: state.account, sign: AES.signSecret({
+          nonce: state.signatureInfo.nonce,
+          account: state.account,
+          cmd: "getGameCoin"
+        })
+      }, "getGameCoin").then(response => {
         if (response.code == 0) {
-          commit('SET_GAME_COIN', response.data.gamecoin);
+          commit('SET_GAME_COIN', response.data.gameCoin);
           resolve(response)
         } else {
           Toast(response.message);

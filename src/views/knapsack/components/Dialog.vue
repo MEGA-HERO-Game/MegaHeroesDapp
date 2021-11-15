@@ -2,81 +2,98 @@
   <div class="knapsack-dialog" v-if="show">
     <div class="knapsack-box">
       <img @click="show = false" class="close-icon" src="@/assets/home/close.png" alt="">
-      <div class="header mh-flex mh-vertical-center">
-        <div class="headCon">
-          <img :src="formatHeroImg(info.icon)" alt="">
-        </div>
-        <div class="info">
-          <div class="name">{{info.name}}</div>
-          <div class="star mh-center">
-            <img v-for="(item, index) in info.level" :key="index" src="@/assets/knapsack/icon_10.png" alt="">
+      <div v-if="basicInfo.type == 1">
+        <div class="header mh-flex mh-vertical-center">
+          <div class="headCon">
+            <img :src="formatHeroImg(info.icon)" alt="">
+          </div>
+          <div class="info">
+            <div class="name">{{info.name}}</div>
+            <div class="star mh-center">
+              <img v-for="(item, index) in info.supportLevel" :key="index" src="@/assets/knapsack/icon_10.png" alt="">
+            </div>
+          </div>
+          <div class="rightCon" v-if="basicInfo.type == 2 && basicInfo.isIBox == 2">
+            <div class="nft mh-center">NFT</div>
+            <img src="@/assets/knapsack/img_5.png" alt="">
           </div>
         </div>
-        <div class="rightCon">
-          <div class="nft mh-center">NFT</div>
-          <img src="@/assets/knapsack/img_5.png" alt="">
+        <div class="knapsack-title text-center">英雄四维</div>
+        <div class="chartCon mh-flex mh-line-feed">
+          <div class="chartItem mh-center">
+            <img class="chartImg" src="@/assets/knapsack/icon_12.png" alt="">
+            <div class="progressCon">
+              <div class="progress_num">{{info.attack}}/999</div>
+              <div class="progress progress_attack">
+                <div class="progressChild" :style="'width: '+(info.attack/999*100)+'%'"></div>
+              </div>
+            </div>
+          </div>
+          <div class="chartItem mh-center">
+            <img class="chartImg" src="@/assets/knapsack/icon_13.png" alt="">
+            <div class="progressCon">
+              <div class="progress_num">{{info.defense}}/999</div>
+              <div class="progress progress_defense">
+                <div class="progressChild" :style="'width: '+(info.defense/999*100)+'%'"></div>
+              </div>
+            </div>
+          </div>
+          <div class="chartItem mh-center">
+            <img class="chartImg" src="@/assets/knapsack/icon_14.png" alt="">
+            <div class="progressCon">
+              <div class="progress_num">{{info.speed}}/999</div>
+              <div class="progress progress_speed">
+                <div class="progressChild" :style="'width: '+(info.speed/999*100)+'%'"></div>
+              </div>
+            </div>
+          </div>
+          <div class="chartItem mh-center">
+            <img class="chartImg" src="@/assets/knapsack/icon_15.png" alt="">
+            <div class="progressCon">
+              <div class="progress_num">{{info.hp}}/999</div>
+              <div class="progress progress_hp">
+                <div class="progressChild" :style="'width: '+(info.hp/999*100)+'%'"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="knapsack-title text-center">专属技能</div>
+        <div class="mh-flex skill">
+          <div class="skillItem mh-center" v-if="info.skillIcon1">
+            <img :src="formatSkillImg(info.skillIcon1)" alt="">
+            <div>{{info.skillName1}}</div>
+          </div>
+          <div class="skillItem mh-center" v-if="info.skillIcon2">
+            <img :src="formatSkillImg(info.skillIcon2)" alt="">
+            <div>{{info.skillName2}}</div>
+          </div>
+        </div>
+        <div class="intro">
+          {{info.skillIntro1}}<br>
+          {{info.skillIntro2}}
         </div>
       </div>
-      <div class="knapsack-title text-center">英雄四维</div>
-      <div class="chartCon mh-flex mh-line-feed">
-        <div class="chartItem mh-center">
-          <img class="chartImg" src="@/assets/knapsack/icon_12.png" alt="">
-          <div class="progressCon">
-            <div class="progress_num">{{info.attack}}/999</div>
-            <div class="progress progress_attack">
-              <div class="progressChild" :style="'width: '+(info.attack/999*100)+'%'"></div>
-            </div>
+      <div v-if="basicInfo.type == 2 && basicInfo.isIBox == 1">
+        <div class="header mh-flex mh-vertical-center">
+          <div class="headCon">
+            <img :src="info.pic" alt="">
+          </div>
+          <div class="info">
+            <div class="name">{{info.name}}</div>
+            <div class="star mh-center"></div>
           </div>
         </div>
-        <div class="chartItem mh-center">
-          <img class="chartImg" src="@/assets/knapsack/icon_13.png" alt="">
-          <div class="progressCon">
-            <div class="progress_num">{{info.defense}}/999</div>
-            <div class="progress progress_defense">
-              <div class="progressChild" :style="'width: '+(info.defense/999*100)+'%'"></div>
-            </div>
-          </div>
+        <div class="knapsack-title text-center">说明</div>
+        <div class="intro">
+            {{info.desc}}
         </div>
-        <div class="chartItem mh-center">
-          <img class="chartImg" src="@/assets/knapsack/icon_14.png" alt="">
-          <div class="progressCon">
-            <div class="progress_num">{{info.speed}}/999</div>
-            <div class="progress progress_speed">
-              <div class="progressChild" :style="'width: '+(info.speed/999*100)+'%'"></div>
-            </div>
-          </div>
-        </div>
-        <div class="chartItem mh-center">
-          <img class="chartImg" src="@/assets/knapsack/icon_15.png" alt="">
-          <div class="progressCon">
-            <div class="progress_num">{{info.hp}}/999</div>
-            <div class="progress progress_hp">
-              <div class="progressChild" :style="'width: '+(info.hp/999*100)+'%'"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="knapsack-title text-center">专属技能</div>
-      <div class="mh-flex skill">
-        <div class="skillItem mh-center">
-          <img :src="formatSkillImg(info.skillIcon1)" alt="">
-          <div>{{info.skillName1}}</div>
-        </div>
-        <div class="skillItem mh-center">
-          <img :src="formatSkillImg(info.skillIcon2)" alt="">
-          <div>{{info.skillName2}}</div>
-        </div>
-      </div>
-      <div class="intro">
-        {{info.skillIntro1}}<br>
-        {{info.skillIntro2}}
       </div>
       <div class="home-title mh-center" v-if="basicInfo.type == 1 && info.assetType != 3" @click="jumpExtract">提取</div>
-      <div class="home-title mh-center" v-if="basicInfo.type == 2">存入</div>
+      <div class="home-title mh-center" v-if="basicInfo.type == 2" @click="jumpDeposit">存入</div>
       <div class="footerCon">
         <div class="footerItem mh-center">
           <div class="name mh-flex-1 text-right">Token id</div>
-          <div class="mh-flex-1 text-left">{{info.typeId}}</div>
+          <div class="mh-flex-1 text-left">{{info.tokenId}}</div>
         </div>
         <div class="mh-center">
           <div class="name mh-flex-1 text-right">合约地址</div>
@@ -109,7 +126,7 @@ export default {
   methods: {
     init(info, basicInfo) {
       this.show = true;
-      info.level = parseFloat(info.level);
+      info.supportLevel = parseInt(info.supportLevel);
       this.info = info;
       this.basicInfo = basicInfo;
       // this.getDetail(info.typeId || info.tokenId);
@@ -137,7 +154,16 @@ export default {
       this.$router.push({
         path: "/knapsack/extract",
         query: {
-          id: this.info.typeId
+          id: this.info.tokenId
+        }
+      });
+    },
+    jumpDeposit(){
+      this.$router.push({
+        path: "/knapsack/deposit",
+        query: {
+          id: this.info.tokenId,
+          isBox: this.basicInfo.isIBox
         }
       });
     }
@@ -171,6 +197,7 @@ export default {
     .header {
       padding-left: 18px;
       padding-bottom: 30px;
+      padding-top: 30px;
       .headCon {
         margin-right: 26px;
         img {
@@ -196,7 +223,7 @@ export default {
         }
       }
       .rightCon {
-        padding-top: 82px;
+        padding-top: 52px;
         img {
           width: 102px;
           height: 102px;

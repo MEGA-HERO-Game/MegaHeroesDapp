@@ -58,7 +58,7 @@
               class="item"
               v-for="(item, index) in iboxList"
               :key="index"
-              @click="handleIBox(item)"
+              @click="handleDetail(item)"
             >
               <img :src="item.pic" alt="" />
             </div>
@@ -132,7 +132,7 @@
         </div>
         <div class="mh-flex mh-align-between mh-vertical-center footCon">
           <div class="home-title mh-center" @click="refresh">刷新</div>
-          <div class="text">游戏内钻石：{{gameCion}}</div>
+          <div class="text">游戏内钻石：{{gamecoin}}</div>
         </div>
       </div>
       <div class="tip text-center">钱包资产可在iBox交易平台进行出售</div>
@@ -161,7 +161,7 @@ export default {
   components: { LoadingModal, TipModal, Dialog },
   mixins: [imgPath],
   computed: {
-    ...mapGetters(["account", "web3", "signatureInfo"]),
+    ...mapGetters(["account", "web3", "signatureInfo", "gamecoin"]),
   },
   data() {
     return {
@@ -207,8 +207,10 @@ export default {
       centerApi(
         {
           nonce: this.signatureInfo.nonce,
+          account: this.account,
           sign: AES.signSecret({
             nonce: this.signatureInfo.nonce,
+            account: this.account,
             cmd: "getGameAssetList",
           }),
         },
@@ -218,12 +220,15 @@ export default {
           this.loadComplete = true;
           if (response.code == 0) {
             let gameAsset = [];
-            if (response.data && response.data.gameAsset) {
-              gameAsset = response.data.gameAsset;
+            // if (response.data && response.data.gameAsset) {
+            //   gameAsset = response.data.gameAsset;
+            // }
+            if (response.gameAsset) {
+              gameAsset = response.gameAsset;
             }
-            if(response.data && response.data.gameCion){
-              this.gameCion = response.data.gameCion;
-            }
+            // if(response.data && response.data.gameCion){
+            //   this.gameCion = response.data.gameCion;
+            // }
             let godsList = gameAsset.filter((element) => {
               return element.assetType == 2;
             });
@@ -232,6 +237,7 @@ export default {
             });
             this.godsList = godsList;
             this.spiritList = spiritList;
+            this.$store.dispatch("user/getGameCoin");
           } else {
             this.$toast(response.errorMessage);
           }

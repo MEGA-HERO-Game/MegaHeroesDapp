@@ -2,12 +2,12 @@
   <div class="knapsackDeposit">
     <div class="box mh-flex mh-vertical-center">
       <div class="imgCon">
-        <img src="@/assets/knapsack/img_2.png" alt="" />
+        <img :src="info.pic" alt="" />
       </div>
       <div class="info mh-flex-1">
-        <div class="name mh-flex mh-vertical-center" @click="chooseList">
-          <span>Luna</span>
-          <img src="@/assets/common/bottom_allow.png" alt="" />
+        <div class="name mh-flex mh-vertical-center">
+          <span>{{ info.name }}</span>
+          <!-- <img src="@/assets/common/bottom_allow.png" alt="" /> -->
         </div>
         <div class="num">数量1</div>
       </div>
@@ -18,11 +18,11 @@
     </div>
     <div class="box mh-flex mh-vertical-center">
       <div class="imgCon">
-        <img src="@/assets/knapsack/img_2.png" alt="" />
+        <img :src="info.pic" alt="" />
       </div>
       <div class="info mh-flex-1">
         <div class="name mh-flex mh-vertical-center">
-          <span>Luna</span>
+          <span>{{ info.name }}</span>
         </div>
         <div class="num">数量1</div>
       </div>
@@ -45,6 +45,7 @@ import TipModal from "@/components/TipModal";
 import SelectAsset from "@/components/SelectAsset";
 import { mapGetters } from "vuex";
 import { getXWorldService } from "@/xworldjs/xworldjs";
+import { metadataApi } from "@/api/user";
 export default {
   name: "KnapsackDeposit",
   components: { LoadingModal, TipModal, SelectAsset },
@@ -54,9 +55,17 @@ export default {
   data() {
     return {
       tokenId: 207000000001,
+      isBox: "",
+      info: {},
     };
   },
-  created() {},
+  created() {
+    this.tokenId = this.$route.query.id;
+    this.isBox = this.$route.query.isBox;
+    if (this.isBox == 1) {
+      this.getBox();
+    }
+  },
   mounted() {},
   watch: {
     signatureInfo: {
@@ -73,10 +82,42 @@ export default {
     chooseList() {
       this.$refs["SelectAsset"].initData();
     },
+    getBox() {
+      metadataApi({
+        tokenId: this.tokenId,
+        assetType: "iBox",
+      }).then((response) => {
+        if (response.code == 1) {
+          this.info = response.data;
+        }
+      });
+    },
     submit() {
+      if (this.isBox == 1) {
+        this.iboxBurn();
+      } else {
+        this.nftBurn();
+      }
+    },
+    nftBurn() {
       this.$refs["LoadingModal"].initData();
       getXWorldService()
         .mpNFTContract.burn(this.account, this.tokenId)
+        .then((data) => {
+          // success
+          this.$refs["LoadingModal"].close();
+          this.$refs["TipModal"].initData("存入成功");
+        })
+        .catch((error) => {
+          // Failure
+          this.$refs["LoadingModal"].close();
+          this.$refs["TipModal"].initData("交易失败");
+        });
+    },
+    iboxBurn() {
+      this.$refs["LoadingModal"].initData();
+      getXWorldService()
+        .iboxTokenContract.burn(this.account, this.tokenId)
         .then((data) => {
           // success
           this.$refs["LoadingModal"].close();
